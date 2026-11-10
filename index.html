@@ -1559,6 +1559,7 @@ window.APP_CONFIG = {
     if (!location.hash) location.replace(state.session ? '#/feed' : '#/login-member');
     else render();
   }
+  window.addEventListener('hashchange', function () { render(); });
   boot();
 })();
 
