@@ -1,0 +1,1567 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-page-node-id="aAcTLGD5QXipnpI1gFRCCx">
+<head data-page-node-id="mIzHbpB0KqWJDXUzw9edpf">
+<meta charset="UTF-8" data-page-node-id="euWQr1etYN62MoP7sX3myF" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" data-page-node-id="6YANAHT0E3ZX8XbIFYXXrU" />
+<meta name="theme-color" content="#667eea" data-page-node-id="6AFX0QxzOjeOZcjb2LixaE" />
+<meta name="description" content="Superben 会员端 - 会员专属内容社区" data-page-node-id="qOw3NVyEfVrFzcvCbvON66" />
+<title>Superben - 会员端</title>
+<style>
+:root{
+  --brand:#667eea;
+  --brand-2:#764ba2;
+  --bg:#f5f6fa;
+  --card:#ffffff;
+  --text:#1f2333;
+  --muted:#8a8fa3;
+  --line:#eceef5;
+  --shadow:0 2px 12px rgba(31,35,51,.05);
+}
+
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  background:#e9ecf5;color:var(--text);font-size:15px;line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:var(--brand);text-decoration:none}
+button{font-family:inherit;border:none;background:none;cursor:pointer;color:inherit;padding:0}
+input,textarea{font-family:inherit;font-size:15px;color:inherit;border:none;outline:none;background:none}
+h1,h2,h3,p{margin:0}
+
+.app{
+  max-width:480px;margin:0 auto;background:var(--bg);min-height:100vh;
+  position:relative;overflow-x:hidden;box-shadow:0 0 60px rgba(31,35,51,.10);
+}
+@media (max-width:520px){ .app{box-shadow:none} }
+
+.page{min-height:100vh;padding-bottom:calc(72px + env(safe-area-inset-bottom))}
+.page.no-tab{padding-bottom:env(safe-area-inset-bottom)}
+
+/* ---------- top bar ---------- */
+.topbar{
+  position:sticky;top:0;z-index:20;height:52px;display:flex;align-items:center;
+  justify-content:space-between;padding:0 14px;background:rgba(255,255,255,.94);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line);
+}
+.topbar h2{font-size:16px;font-weight:600;letter-spacing:.2px}
+.topbar .brand{font-size:18px;font-weight:700;letter-spacing:-.3px;
+  background:linear-gradient(135deg,#667eea,#764ba2);-webkit-background-clip:text;background-clip:text;color:transparent}
+.icon-btn{
+  width:32px;height:32px;border-radius:10px;display:grid;place-items:center;
+  background:#f2f3f8;color:#5b6072;transition:.15s;
+}
+.icon-btn:active{transform:scale(.94)}
+.icon-btn svg{width:18px;height:18px}
+.top-right{display:flex;gap:8px}
+
+/* ---------- login ---------- */
+.login{padding:0 0 40px;min-height:100vh;background:#fff}
+.login-hero{
+  background:linear-gradient(150deg,#667eea 0%,#764ba2 100%);
+  padding:64px 28px 74px;color:#fff;position:relative;overflow:hidden;
+}
+.login-hero::after{
+  content:"";position:absolute;width:240px;height:240px;border-radius:50%;
+  background:rgba(255,255,255,.10);right:-90px;top:-70px;
+}
+.login-hero::before{
+  content:"";position:absolute;width:140px;height:140px;border-radius:50%;
+  background:rgba(255,255,255,.08);left:-50px;bottom:-60px;
+}
+.logo-mark{
+  width:56px;height:56px;border-radius:18px;background:rgba(255,255,255,.18);
+  border:1px solid rgba(255,255,255,.32);display:grid;place-items:center;
+  font-size:24px;font-weight:700;letter-spacing:.5px;margin-bottom:18px;position:relative;z-index:1;
+}
+.login-hero h1{font-size:26px;font-weight:700;letter-spacing:-.5px;position:relative;z-index:1}
+.login-hero p{font-size:13.5px;color:rgba(255,255,255,.82);margin-top:6px;position:relative;z-index:1}
+
+.login-card{
+  margin:-38px 20px 0;background:#fff;border-radius:20px;padding:22px 18px 20px;
+  box-shadow:0 12px 34px rgba(60,60,120,.12);position:relative;z-index:2;
+}
+.field-label{font-size:13px;color:var(--muted);margin:0 0 6px 2px;display:block}
+.input-row{
+  display:flex;align-items:center;gap:10px;height:50px;padding:0 14px;
+  background:#f6f7fb;border:1px solid transparent;border-radius:12px;margin-bottom:14px;transition:.18s;
+}
+.input-row:focus-within{background:#fff;border-color:#c9cff5;box-shadow:0 0 0 3px rgba(102,126,234,.12)}
+.input-row input{flex:1;min-width:0;font-size:15px}
+.input-row input::placeholder{color:#b3b8c8}
+.prefix{font-size:12px;font-weight:600;color:#fff;background:#667eea;border-radius:6px;padding:2px 6px;letter-spacing:.5px}
+.btn{display:block;width:100%;height:48px;border-radius:12px;font-size:15.5px;font-weight:600;transition:.15s}
+.btn:active{transform:scale(.985)}
+.btn-primary{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;box-shadow:0 8px 20px rgba(102,126,234,.32)}
+.btn-primary[disabled]{opacity:.55;box-shadow:none}
+.btn-ghost{background:#f2f3f8;color:#5b6072}
+.btn-code{
+  font-size:13px;font-weight:600;color:var(--brand);white-space:nowrap;
+  padding:6px 2px 6px 10px;border-left:1px solid #e3e6f0;
+}
+.btn-code[disabled]{color:#b3b8c8}
+.btn-wechat{
+  background:#fff;color:#3d4255;border:1px solid #e3e6f0;display:flex;align-items:center;
+  justify-content:center;gap:8px;font-weight:500;
+}
+.btn-wechat svg{width:20px;height:20px;color:#07c160}
+.or-line{display:flex;align-items:center;gap:12px;margin:16px 0 14px;color:#c2c6d2;font-size:11.5px}
+.or-line::before,.or-line::after{content:"";flex:1;height:1px;background:#eef0f6}
+.login-tip{font-size:12px;color:#a8adbd;text-align:center;margin-top:14px;line-height:1.5}
+.boot{padding:80px 20px;text-align:center;color:#a8adbd;font-size:13px}
+.boot-fail{padding:100px 24px;text-align:center;color:#8a8fa3;font-size:14px;line-height:1.8}
+.agreement{font-size:11.5px;color:#a8adbd;text-align:center;padding:26px 30px 0;line-height:1.7}
+.agreement a{color:#7f8bd6}
+.demo-hint{
+  margin:18px 20px 0;padding:10px 14px;background:#fffcf0;border:1px solid #f6e6b8;
+  border-radius:10px;font-size:12px;color:#a5811f;text-align:center;
+}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex;gap:8px;padding:12px 14px 4px;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{
+  padding:6px 15px;border-radius:999px;font-size:13.5px;color:#7c8194;
+  background:#fff;border:1px solid var(--line);white-space:nowrap;transition:.15s;
+}
+.tab.on{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border-color:transparent;box-shadow:0 4px 12px rgba(102,126,234,.26)}
+
+/* ---------- post card ---------- */
+.post{background:#fff;border-radius:16px;padding:15px 15px 4px;margin:10px 14px;box-shadow:var(--shadow)}
+.post-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.avatar{
+  width:38px;height:38px;border-radius:12px;display:grid;place-items:center;
+  color:#fff;font-size:15px;font-weight:600;flex:0 0 auto;letter-spacing:.5px;
+}
+.avatar.lg{width:56px;height:56px;border-radius:18px;font-size:22px}
+.p-name{font-size:14.5px;font-weight:600;display:flex;align-items:center;gap:6px}
+.p-time{font-size:11.5px;color:#a8adbd;margin-top:1px}
+.badge{font-size:10.5px;font-weight:600;padding:1px 6px;border-radius:5px;background:#eef0ff;color:#5b6bf0;letter-spacing:.2px}
+.badge.gold{background:linear-gradient(135deg,#f0b429,#e89b1b);color:#fff}
+.post-body{font-size:14.5px;line-height:1.72;color:#33384a;white-space:pre-wrap;word-break:break-word}
+.post-body.clamp{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+.imgs{display:grid;gap:6px;margin-top:10px}
+.imgs.c2{grid-template-columns:1fr 1fr}
+.imgs.c1{grid-template-columns:1fr}
+.imgs.c3{grid-template-columns:repeat(3,1fr)}
+.ph{aspect-ratio:1/1;border-radius:10px;position:relative;overflow:hidden}
+.imgs.c1 .ph{aspect-ratio:16/10}
+.ph::after{content:attr(data-tag);position:absolute;left:8px;bottom:6px;font-size:10.5px;color:rgba(255,255,255,.9);letter-spacing:.4px}
+.ph-1{background:linear-gradient(135deg,#a5b4fc,#6366f1)}
+.ph-2{background:linear-gradient(135deg,#c4b5fd,#8b5cf6)}
+.ph-3{background:linear-gradient(135deg,#93c5fd,#3b82f6)}
+.ph-4{background:linear-gradient(135deg,#f9a8d4,#ec4899)}
+.ph-5{background:linear-gradient(135deg,#7dd3fc,#0ea5e9)}
+.post-foot{display:flex;align-items:center;gap:22px;padding:10px 2px 12px;margin-top:8px;border-top:1px solid #f4f5f9;color:#9aa0b2;font-size:12.5px}
+.act{display:flex;align-items:center;gap:5px;transition:.15s}
+.act svg{width:16px;height:16px}
+.act.on{color:#f0576f}
+.act.on svg{fill:#f0576f;stroke:#f0576f}
+.act:active{transform:scale(.94)}
+.vip-tag{margin-left:auto;font-size:10.5px;font-weight:600;color:#a5811f;background:#fdf3d8;padding:2px 7px;border-radius:5px}
+
+.locked{position:relative;border-radius:12px;overflow:hidden;margin-top:10px}
+.locked .post-body{filter:blur(4px);user-select:none;pointer-events:none}
+.lock-mask{
+  position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;
+  background:linear-gradient(180deg,rgba(255,255,255,.55),rgba(255,255,255,.94));
+  text-align:center;padding:16px;
+}
+.lock-mask svg{width:22px;height:22px;color:#8b7bd8}
+.lock-mask span{font-size:12.5px;color:#6d6a8a}
+.lock-btn{margin-top:2px;font-size:12.5px;font-weight:600;color:#fff;background:linear-gradient(135deg,#667eea,#764ba2);padding:7px 18px;border-radius:999px}
+
+/* ---------- tabbar ---------- */
+.tabbar{
+  position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;
+  display:flex;background:rgba(255,255,255,.97);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom);z-index:30;
+}
+.tabbar a{
+  flex:1;padding:8px 0 6px;display:flex;flex-direction:column;align-items:center;gap:2px;
+  font-size:10.5px;color:#9aa0b2;transition:.15s;position:relative;
+}
+.tabbar a.on{color:var(--brand);font-weight:600}
+.tabbar svg{width:21px;height:21px}
+.dot{position:absolute;top:6px;right:calc(50% - 18px);width:7px;height:7px;border-radius:50%;background:#f0576f}
+
+/* ---------- fab ---------- */
+.fab{
+  position:fixed;bottom:92px;left:50%;margin-left:172px;width:52px;height:52px;border-radius:18px;
+  background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;display:grid;place-items:center;
+  box-shadow:0 10px 24px rgba(102,126,234,.38);z-index:29;transition:.15s;
+}
+.fab:active{transform:scale(.94)}
+.fab svg{width:22px;height:22px}
+@media (max-width:520px){ .fab{left:auto;margin-left:0;right:18px} }
+
+/* ---------- me ---------- */
+.me-hero{background:linear-gradient(150deg,#667eea 0%,#764ba2 100%);padding:30px 20px 56px;color:#fff;position:relative;overflow:hidden}
+.me-hero::after{content:"";position:absolute;width:220px;height:220px;border-radius:50%;background:rgba(255,255,255,.09);right:-80px;top:-90px}
+.me-id{display:flex;align-items:center;gap:14px;position:relative;z-index:1}
+.me-id .avatar{background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.35);box-shadow:none}
+.me-name{font-size:19px;font-weight:600;letter-spacing:.2px}
+.me-sub{font-size:12px;color:rgba(255,255,255,.78);margin-top:3px;letter-spacing:.3px}
+.member-card{
+  margin:-40px 16px 0;background:#fff;border-radius:18px;padding:16px 16px 15px;
+  box-shadow:0 10px 26px rgba(60,60,120,.10);position:relative;z-index:2;
+}
+.mc-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.mc-title{font-size:13px;color:var(--muted);letter-spacing:.3px}
+.mc-state{font-size:11.5px;font-weight:600;padding:2px 8px;border-radius:6px;background:#eef7ee;color:#3f8f4f}
+.mc-state.off{background:#fdf0ef;color:#c05a52}
+.mc-main{font-size:15px;font-weight:600;color:var(--text)}
+.mc-main em{font-style:normal;color:var(--brand);font-size:19px;margin:0 2px}
+.mc-bar{height:5px;border-radius:3px;background:#f0f1f6;margin:11px 0 10px;overflow:hidden}
+.mc-bar i{display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,#667eea,#8b5cf6)}
+.mc-foot{display:flex;align-items:center;justify-content:space-between;font-size:11.5px;color:#a8adbd}
+.mc-btn{font-size:12.5px;font-weight:600;color:#fff;background:linear-gradient(135deg,#667eea,#764ba2);padding:6px 15px;border-radius:999px}
+
+.stat-row{display:flex;background:#fff;border-radius:16px;margin:12px 16px;padding:14px 0;box-shadow:var(--shadow)}
+.stat{flex:1;text-align:center;position:relative}
+.stat + .stat::before{content:"";position:absolute;left:0;top:6px;bottom:6px;width:1px;background:#f0f1f6}
+.stat b{display:block;font-size:17px;font-weight:600}
+.stat span{font-size:11.5px;color:var(--muted)}
+
+.menu{background:#fff;border-radius:16px;margin:12px 16px;overflow:hidden;box-shadow:var(--shadow)}
+.menu-item{display:flex;align-items:center;gap:12px;padding:15px 16px;font-size:14.5px;border-bottom:1px solid #f6f7fa;transition:.15s}
+.menu-item:last-child{border-bottom:none}
+.menu-item:active{background:#fafbfe}
+.mi-ico{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;background:#f2f4fd;color:#667eea;flex:0 0 auto}
+.mi-ico svg{width:16px;height:16px}
+.menu-item .arrow{margin-left:auto;color:#c8ccd8;font-size:16px;line-height:1}
+.menu-item.danger{color:#c05a52}
+.menu-item.danger .mi-ico{background:#fdf0ef;color:#c05a52}
+
+/* ---------- generic content ---------- */
+.section-title{padding:18px 16px 8px;font-size:12.5px;color:var(--muted);letter-spacing:.4px}
+.card{background:#fff;border-radius:16px;margin:0 16px 12px;padding:16px;box-shadow:var(--shadow)}
+.divider{height:1px;background:#f4f5f9;margin:14px 0}
+
+.textarea{
+  width:100%;min-height:150px;background:#f7f8fc;border-radius:12px;padding:14px;
+  font-size:15px;line-height:1.7;resize:none;border:1px solid transparent;transition:.18s;
+}
+.textarea:focus{background:#fff;border-color:#c9cff5;box-shadow:0 0 0 3px rgba(102,126,234,.10)}
+.field-input{
+  width:100%;height:46px;background:#f7f8fc;border-radius:12px;padding:0 14px;
+  border:1px solid transparent;transition:.18s;
+}
+.field-input:focus{background:#fff;border-color:#c9cff5;box-shadow:0 0 0 3px rgba(102,126,234,.10)}
+.counter{text-align:right;font-size:11.5px;color:#b3b8c8;padding:8px 2px 0}
+.hint{font-size:12px;color:#a8adbd;line-height:1.7}
+
+/* post detail */
+.article{background:#fff;padding:18px 18px 8px}
+.article h1{font-size:18px;font-weight:600;line-height:1.5;margin-bottom:12px}
+.article .post-body{font-size:15.5px;line-height:1.85}
+.comments{background:#fff;padding:4px 18px 22px}
+.cmt-title{font-size:13px;color:var(--muted);padding:14px 0 10px;border-top:1px solid #f4f5f9}
+.cmt{display:flex;gap:10px;padding:10px 0}
+.cmt .avatar{width:32px;height:32px;border-radius:10px;font-size:13px}
+.cmt-body{flex:1;min-width:0}
+.cmt-name{font-size:13px;font-weight:600;color:#4b5063}
+.cmt-text{font-size:14px;color:#3d4255;line-height:1.65;margin-top:2px;word-break:break-word}
+.cmt-time{font-size:11px;color:#b3b8c8;margin-top:3px}
+.cmt-empty{text-align:center;color:#b3b8c8;font-size:13px;padding:22px 0}
+.input-bar{
+  position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;
+  display:flex;align-items:center;gap:10px;padding:10px 14px calc(10px + env(safe-area-inset-bottom));
+  background:rgba(255,255,255,.98);border-top:1px solid var(--line);z-index:30;
+}
+.input-bar input{flex:1;height:40px;background:#f6f7fb;border-radius:999px;padding:0 16px;font-size:14px}
+.send-btn{height:40px;padding:0 18px;border-radius:999px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;font-size:14px;font-weight:600}
+.send-btn[disabled]{opacity:.5}
+
+/* questions */
+.q-item{background:#fff;border-radius:16px;margin:10px 14px;padding:15px;box-shadow:var(--shadow)}
+.q-head{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.q-status{font-size:10.5px;font-weight:600;padding:2px 7px;border-radius:5px;background:#eef0ff;color:#5b6bf0}
+.q-status.done{background:#eef7ee;color:#3f8f4f}
+.q-title{font-size:15px;font-weight:600;line-height:1.55;color:#272c3d}
+.q-desc{font-size:13px;color:#7c8194;margin-top:6px;line-height:1.65;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.q-foot{display:flex;align-items:center;gap:10px;margin-top:10px;font-size:11.5px;color:#a8adbd}
+.q-foot .right{margin-left:auto;color:#8b90a3}
+
+/* messages */
+.msg{display:flex;gap:12px;padding:15px 16px;background:#fff;border-bottom:1px solid #f6f7fa;transition:.15s}
+.msg:active{background:#fafbfe}
+.msg-ico{width:40px;height:40px;border-radius:13px;display:grid;place-items:center;flex:0 0 auto;color:#fff}
+.msg-ico svg{width:19px;height:19px}
+.msg-body{flex:1;min-width:0}
+.msg-top{display:flex;align-items:baseline;gap:8px}
+.msg-title{font-size:14px;font-weight:600}
+.msg-time{margin-left:auto;font-size:11px;color:#b3b8c8;white-space:nowrap}
+.msg-desc{font-size:12.5px;color:#8a8fa3;margin-top:3px;line-height:1.6;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.msg.unread .msg-title::after{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:#f0576f;margin-left:6px;vertical-align:middle}
+
+/* payment */
+.plans{padding:14px 16px 4px}
+.plan{
+  display:flex;align-items:center;gap:14px;background:#fff;border:1.5px solid transparent;
+  border-radius:16px;padding:16px;margin-bottom:12px;box-shadow:var(--shadow);transition:.18s;position:relative;
+}
+.plan.on{border-color:#667eea;box-shadow:0 8px 22px rgba(102,126,234,.16)}
+.plan-radio{width:20px;height:20px;border-radius:50%;border:1.5px solid #d5d9e6;display:grid;place-items:center;flex:0 0 auto}
+.plan.on .plan-radio{border-color:#667eea;background:#667eea}
+.plan.on .plan-radio::after{content:"";width:8px;height:8px;border-radius:50%;background:#fff}
+.plan-name{font-size:15.5px;font-weight:600}
+.plan-desc{font-size:11.5px;color:#a8adbd;margin-top:2px}
+.plan-price{margin-left:auto;text-align:right}
+.plan-price b{font-size:20px;font-weight:700;color:#e0603f}
+.plan-price b i{font-style:normal;font-size:13px;font-weight:600;margin-right:1px}
+.plan-price s{display:block;font-size:11px;color:#c2c6d2}
+.plan-hot{position:absolute;top:-9px;right:14px;font-size:10px;font-weight:600;color:#fff;background:linear-gradient(135deg,#f0b429,#e89b1b);padding:2px 8px;border-radius:5px}
+
+.benefits{background:#fff;border-radius:16px;margin:6px 16px 12px;padding:16px;box-shadow:var(--shadow)}
+.benefits h3{font-size:13.5px;font-weight:600;margin-bottom:12px}
+.benefit{display:flex;align-items:flex-start;gap:9px;font-size:13.5px;color:#4b5063;padding:6px 0}
+.benefit svg{width:16px;height:16px;color:#3f8f4f;flex:0 0 auto;margin-top:2px}
+.pay-bar{
+  position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;
+  display:flex;align-items:center;gap:14px;padding:12px 16px calc(12px + env(safe-area-inset-bottom));
+  background:rgba(255,255,255,.98);border-top:1px solid var(--line);z-index:30;
+}
+.pay-total{font-size:12px;color:var(--muted);line-height:1.4}
+.pay-total b{display:block;font-size:20px;font-weight:700;color:#e0603f}
+.pay-btn{flex:1;height:48px;border-radius:12px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;font-size:15.5px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:7px;box-shadow:0 8px 20px rgba(102,126,234,.3)}
+.pay-btn svg{width:19px;height:19px}
+.pay-btn:active{transform:scale(.985)}
+
+.result{padding:64px 24px 30px;text-align:center;background:#fff;min-height:100vh}
+.result-mark{width:76px;height:76px;border-radius:50%;background:#eef7ee;display:grid;place-items:center;margin:0 auto 22px}
+.result-mark svg{width:36px;height:36px;color:#3f8f4f}
+.result h1{font-size:21px;font-weight:600;margin-bottom:10px}
+.result p{font-size:13.5px;color:#8a8fa3;line-height:1.8}
+.result-detail{background:#f8f9fd;border-radius:14px;margin:24px 0;padding:14px 16px;text-align:left}
+.result-row{display:flex;justify-content:space-between;font-size:13px;padding:6px 0;color:#5b6072}
+.result-row b{font-weight:600;color:#272c3d}
+.result .btn{margin-bottom:10px}
+
+/* search overlay */
+.search-bar{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#fff;border-bottom:1px solid var(--line)}
+.search-bar input{flex:1;height:38px;background:#f6f7fb;border-radius:999px;padding:0 16px;font-size:14px}
+
+/* empty */
+.empty{text-align:center;padding:70px 20px;color:#b3b8c8}
+.empty svg{width:40px;height:40px;opacity:.5;margin-bottom:12px}
+.empty p{font-size:13.5px}
+
+/* toast */
+.toast{
+  position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) scale(.94);
+  background:rgba(28,31,44,.92);color:#fff;font-size:13.5px;padding:11px 20px;border-radius:12px;
+  max-width:270px;text-align:center;line-height:1.55;opacity:0;pointer-events:none;transition:.22s;z-index:99;
+}
+.toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+
+.skeleton{color:#b3b8c8;font-size:13px;text-align:center;padding:40px 0}
+
+</style>
+</head>
+<body data-page-node-id="HBUs6k2FHaF9usFck7CwXP">
+<div id="app" class="app" data-page-node-id="6nQRvJzykXMwgrmD2tgFZH"><div class="boot" data-page-node-id="psSaIAOopaHhDlkF88K6lK">正在加载…</div></div>
+<div id="toast" class="toast" data-page-node-id="Go1bdYgxryirYPeO7tf6GT"></div>
+
+<script>
+// 云服务公开配置：只包含可公开的 endpoint / publishableKey / oauthRelayBaseUrl
+// 这些值由云服务开通时下发，可安全放在前端；真正的权限由服务端按域名 + RLS 校验。
+window.APP_CONFIG = {
+  mode: 'local',
+  endpoint: 'https://member-community-09146.app.workbuddy.host',
+  publishableKey: 'wbpk_mSW4G19lsIVDNNG8l3bD1d_Fe4yoxWa3rw5x2kkk0QhIznUS045rNqf',
+  oauthRelayBaseUrl: 'https://www.workbuddy.cn/v2/as/genie-baas/oauth'
+};
+
+</script>
+<script>
+/* 本地数据驱动：在浏览器内模拟云服务的 database / auth 接口
+ * 用途：当站点不在云服务自有域名下（Origin 校验不通过）或云服务不可达时，
+ *      用同一套 API 形状在 localStorage 里跑通完整流程，便于部署到任意静态托管。
+ * 语义对齐：from(table).select/insert/update/delete + eq/order/limit/maybeSingle，
+ *          database.rpc('toggle_like' | 'pay_order')，auth.sendOtp/verifyOtp/getSession/signOut
+ */
+(function () {
+  'use strict';
+
+  var DB_KEY = 'sb_local_db_v2';
+  var SESSION_KEY = 'sb_local_session_v2';
+
+  function iso(offsetMs) { return new Date(Date.now() + (offsetMs || 0)).toISOString(); }
+
+  function seed() {
+    return {
+      seq: 1000,
+      profiles: [],
+      posts: [
+        {
+          id: 1, owner_id: 'system', owner_name: 'Superben',
+          content: '【本周更新】会员专栏第 28 期已上线。\n\n这期聊的是：一个人做产品，怎么用最少的工具跑通从想法到上线的全流程。我把中间的每一个决策点都拆开了——什么时候该砍需求，什么时候该自己写代码，什么时候花钱买现成的。\n\n文末附了我在用的清单模板，会员可以直接下载。',
+          preview: '会员专栏第 28 期：一个人做产品的全流程，含清单模板下载。',
+          is_vip: true, likes: 128,
+          images: [{ tag: '专栏 / 第 28 期', cls: 'ph-1' }, { tag: '清单模板', cls: 'ph-2' }],
+          created_at: iso(-2 * 3600e3)
+        },
+        {
+          id: 2, owner_id: 'system', owner_name: '林深',
+          content: '把首页重写了一遍，删掉了 60% 的模块。\n\n以前总觉得内容越多越显得专业，现在发现留白才是底气。用户进来只想确认一件事：这里有没有我要的东西。',
+          preview: null, is_vip: false, likes: 86,
+          images: [{ tag: '改版前后对比', cls: 'ph-3' }],
+          created_at: iso(-5 * 3600e3)
+        },
+        {
+          id: 3, owner_id: 'system', owner_name: '阿枝',
+          content: '有没有人和我一样，收藏夹里躺着两百个链接，一个都没打开过。\n\n今天清了半天，只留下 12 个，反而觉得踏实了。',
+          preview: null, is_vip: false, likes: 42, images: [],
+          created_at: iso(-26 * 3600e3)
+        },
+        {
+          id: 4, owner_id: 'system', owner_name: 'Superben',
+          content: '会员专属：私域转化话术模板 v3\n\n含 12 个真实案例拆解，从加好友第一句到最后成交的完整链路。按行业分了 5 类，直接替换括号里的内容就能用。',
+          preview: '私域转化话术模板 v3，含 12 个案例拆解。',
+          is_vip: true, likes: 203,
+          images: [{ tag: '话术模板 v3', cls: 'ph-4' }, { tag: '案例拆解', cls: 'ph-5' }],
+          created_at: iso(-30 * 3600e3)
+        },
+        {
+          id: 5, owner_id: 'system', owner_name: '老陈',
+          content: '做了一年独立开发，这个月收入第一次超过工资。\n\n不是炫耀。是想跟还在熬的人说一句：慢一点真的没关系，只要还在往前。',
+          preview: null, is_vip: false, likes: 117, images: [],
+          created_at: iso(-52 * 3600e3)
+        }
+      ],
+      comments: [
+        { id: 11, owner_id: 'system', owner_name: '阿枝', post_id: 1, content: '清单模板已经下载，第 3 条正好是我卡住的地方。', created_at: iso(-90 * 60e3) },
+        { id: 12, owner_id: 'system', owner_name: '老陈', post_id: 1, content: '看完想问：砍需求的时候，怎么判断哪个是真需求？', created_at: iso(-60 * 60e3) },
+        { id: 13, owner_id: 'system', owner_name: '林深', post_id: 4, content: '话术部分比 v2 顺很多，尤其是加好友第一句。', created_at: iso(-20 * 3600e3) }
+      ],
+      questions: [
+        { id: 21, owner_id: 'system', owner_name: '阿枝', title: '会员到期后，之前下载的资料还能看吗？', detail: '担心资料会跟着会员一起失效，想提前确认一下。', status: 'done', answers: 3, created_at: iso(-7 * 3600e3) },
+        { id: 22, owner_id: 'system', owner_name: '林深', title: '同一个账号可以在多台设备上登录吗？', detail: '手机和平板都想用，会不会互相挤下线。', status: 'wait', answers: 0, created_at: iso(-20 * 3600e3) },
+        { id: 23, owner_id: 'system', owner_name: '老陈', title: '年卡支持开发票吗？', detail: '公司报销需要，抬头可以开个人吗？', status: 'wait', answers: 0, created_at: iso(-40 * 3600e3) }
+      ],
+      messages: [],
+      orders: [],
+      likes: []
+    };
+  }
+
+  function readDb() {
+    var raw = null;
+    try { raw = localStorage.getItem(DB_KEY); } catch (e) { raw = null; }
+    if (!raw) {
+      var fresh = seed();
+      writeDb(fresh);
+      return fresh;
+    }
+    try {
+      var db = JSON.parse(raw);
+      if (!db || !Array.isArray(db.posts)) throw new Error('bad');
+      return db;
+    } catch (e) {
+      var re = seed();
+      writeDb(re);
+      return re;
+    }
+  }
+  function writeDb(db) {
+    try { localStorage.setItem(DB_KEY, JSON.stringify(db)); } catch (e) { /* 隐私模式下忽略 */ }
+  }
+
+  function readSession() {
+    try { return JSON.parse(localStorage.getItem(SESSION_KEY) || 'null'); } catch (e) { return null; }
+  }
+  function writeSession(s) {
+    try {
+      if (s) localStorage.setItem(SESSION_KEY, JSON.stringify(s));
+      else localStorage.removeItem(SESSION_KEY);
+    } catch (e) { /* ignore */ }
+  }
+
+  var db = readDb();
+  var session = readSession();
+
+  function uid() { return (session && session.user && session.user.id) || ''; }
+  function currentProfile() {
+    var u = uid();
+    if (!u) return null;
+    return db.profiles.filter(function (p) { return p.owner_id === u; })[0] || null;
+  }
+  function isMember() {
+    var p = currentProfile();
+    return !!(p && p.expire_at && new Date(p.expire_at).getTime() > Date.now());
+  }
+  function nextId() { db.seq += 1; return db.seq; }
+
+  // 模拟 RLS 行级权限：会员资料 / 站内消息 / 订单只对本人可见可写
+  var USER_SCOPED = { profiles: 1, messages: 1, orders: 1 };
+
+  /* ---------- 查询构造器 ---------- */
+  function Query(table) {
+    this.t = table;
+    this.kind = 'select';
+    this.filters = [];
+    this.orders = [];
+    this.limitN = null;
+    this.payload = null;
+    this.head = false;
+    this.countOnly = false;
+    this.singleMode = null;
+  }
+  Query.prototype._setKind = function (k) { if (this.kind === 'select') this.kind = k; return this; };
+  Query.prototype.select = function (cols, opts) {
+    if (opts && opts.count) this.countOnly = true;
+    if (opts && opts.head) this.head = true;
+    return this;
+  };
+  Query.prototype.insert = function (payload) { this.kind = 'insert'; this.payload = payload; return this; };
+  Query.prototype.update = function (payload) { this._setKind('update'); this.payload = payload; return this; };
+  Query.prototype.delete = function () { this._setKind('delete'); return this; };
+  Query.prototype.eq = function (col, val) { this.filters.push([col, val]); return this; };
+  Query.prototype.order = function (col, opts) {
+    this.orders.push([col, !(opts && opts.ascending === false)]);
+    return this;
+  };
+  Query.prototype.limit = function (n) { this.limitN = n; return this; };
+  Query.prototype.maybeSingle = function () { this.singleMode = 'maybe'; return this; };
+  Query.prototype.single = function () { this.singleMode = 'single'; return this; };
+  Query.prototype.then = function (res, rej) { return this._run().then(res, rej); };
+  Query.prototype['catch'] = function (fn) { return this._run()['catch'](fn); };
+
+  Query.prototype._rows = function () {
+    var list;
+    if (this.t === 'feed_posts') list = db.posts;
+    else list = db[this.t] || [];
+    // 模拟 RLS：这三张表只对本人可见（云端由 row level security 保证）
+    if (USER_SCOPED[this.t]) {
+      var u = uid();
+      list = u ? list.filter(function (r) { return r.owner_id === u; }) : [];
+    }
+    return list;
+  };
+
+  Query.prototype._project = function (list) {
+    var self = this;
+    var out = list.map(function (r) {
+      var row = {};
+      for (var k in r) row[k] = r[k];
+      if (self.t === 'feed_posts') {
+        // 视图语义：非会员读不到 V+ 正文（与云端 security_invoker 视图一致）
+        if (row.is_vip && !isMember()) row.content = null;
+      }
+      return row;
+    });
+    return out;
+  };
+
+  Query.prototype._run = function () {
+    var self = this;
+    return Promise.resolve().then(function () {
+      var rows = self._rows();
+
+      if (self.kind === 'insert') {
+        var items = Array.isArray(self.payload) ? self.payload : [self.payload];
+        var inserted = items.map(function (raw) {
+          var row = {};
+          for (var k in raw) row[k] = raw[k];
+          row.id = nextId();
+          row.owner_id = row.owner_id || uid() || 'anonymous';
+          row.created_at = row.created_at || iso(0);
+          if (self.t === 'posts') {
+            if (row.is_vip === undefined) row.is_vip = false;
+            if (row.likes === undefined) row.likes = 0;
+            if (row.images === undefined) row.images = [];
+            if (row.preview === undefined) row.preview = null;
+          }
+          if (self.t === 'comments') { /* nothing */ }
+          if (self.t === 'questions') {
+            if (row.status === undefined) row.status = 'wait';
+            if (row.answers === undefined) row.answers = 0;
+          }
+          if (self.t === 'messages') {
+            if (row.kind === undefined) row.kind = 'system';
+            if (row.is_read === undefined) row.is_read = false;
+          }
+          if (self.t === 'orders') {
+            if (row.status === undefined) row.status = 'pending';
+            if (row.paid_at === undefined) row.paid_at = null;
+          }
+          if (self.t === 'likes') { /* nothing */ }
+          if (self.t === 'profiles') {
+            if (row.expire_at === undefined) row.expire_at = null;
+            if (row.created_at === undefined) row.created_at = iso(0);
+          }
+          rows.push(row);
+          return row;
+        });
+        // 建档欢迎消息（对齐云端 on_profile_created 触发器）
+        if (self.t === 'profiles') {
+          inserted.forEach(function (p) {
+            db.messages.push({
+              id: nextId(), owner_id: p.owner_id, kind: 'system',
+              title: '欢迎加入',
+              body: '完善资料后即可发布动态与提问；开通会员可解锁全部 V+ 内容。',
+              is_read: false, created_at: iso(0)
+            });
+          });
+        }
+        writeDb(db);
+        return { data: inserted, error: null };
+      }
+
+      var matched = rows.filter(function (r) {
+        return self.filters.every(function (f) { return String(r[f[0]]) === String(f[1]); });
+      });
+
+      if (self.kind === 'update') {
+        matched.forEach(function (r) {
+          for (var k in self.payload) r[k] = self.payload[k];
+        });
+        writeDb(db);
+        return { data: matched, error: null };
+      }
+
+      if (self.kind === 'delete') {
+        var keep = rows.filter(function (r) { return matched.indexOf(r) === -1; });
+        if (self.t === 'feed_posts') db.posts = keep; else db[self.t] = keep;
+        writeDb(db);
+        return { data: matched, error: null };
+      }
+
+      // select
+      self.orders.forEach(function (o) {
+        var col = o[0], asc = o[1];
+        matched.sort(function (a, b) {
+          var av = a[col], bv = b[col];
+          var an = (av === null || av === undefined) ? '' : av;
+          var bn = (bv === null || bv === undefined) ? '' : bv;
+          if (an === bn) return 0;
+          return (an > bn ? 1 : -1) * (asc ? 1 : -1);
+        });
+      });
+      if (self.limitN) matched = matched.slice(0, self.limitN);
+
+      if (self.countOnly) {
+        return { data: null, count: matched.length, error: null };
+      }
+      var projected = self._project(matched);
+      if (self.singleMode) {
+        return { data: projected[0] || null, error: null };
+      }
+      return { data: projected, error: null };
+    });
+  };
+
+  /* ---------- RPC ---------- */
+  function rpc(name, params) {
+    return Promise.resolve().then(function () {
+      var u = uid();
+      if (!u) return { data: null, error: { message: 'not signed in' } };
+
+      if (name === 'toggle_like') {
+        var pid = Number(params && params.p_post_id);
+        var idx = -1;
+        db.likes.forEach(function (l, i) {
+          if (l.owner_id === u && Number(l.post_id) === pid) idx = i;
+        });
+        var post = db.posts.filter(function (p) { return Number(p.id) === pid; })[0];
+        if (!post) return { data: null, error: { message: 'post not found' } };
+        if (idx > -1) {
+          db.likes.splice(idx, 1);
+          post.likes = Math.max(0, (post.likes || 0) - 1);
+        } else {
+          db.likes.push({ id: nextId(), owner_id: u, post_id: pid, created_at: iso(0) });
+          post.likes = (post.likes || 0) + 1;
+        }
+        writeDb(db);
+        return { data: post.likes, error: null };
+      }
+
+      if (name === 'pay_order') {
+        var oid = Number(params && params.p_order_id);
+        var order = db.orders.filter(function (o) {
+          return Number(o.id) === oid && o.owner_id === u && o.status === 'pending';
+        })[0];
+        if (!order) return { data: null, error: { message: 'order not found or already paid' } };
+        order.status = 'paid';
+        order.paid_at = iso(0);
+        var days = Number(order.days) || 0;
+        var prof = currentProfile();
+        if (!prof) {
+          prof = { id: nextId(), owner_id: u, nickname: session.user.name || '会员', member_id: null, expire_at: null, created_at: iso(0) };
+          db.profiles.push(prof);
+        }
+        var base = prof.expire_at && new Date(prof.expire_at).getTime() > Date.now()
+          ? new Date(prof.expire_at).getTime()
+          : Date.now();
+        prof.expire_at = new Date(base + days * 86400e3).toISOString();
+        db.messages.push({
+          id: nextId(), owner_id: u, kind: 'system',
+          title: '会员开通成功',
+          body: '会员权益已生效，有效期 ' + days + ' 天。',
+          is_read: false, created_at: iso(0)
+        });
+        writeDb(db);
+        return { data: prof.expire_at, error: null };
+      }
+
+      return { data: null, error: { message: 'unknown rpc: ' + name } };
+    });
+  }
+
+  /* ---------- Auth ---------- */
+  var auth = {
+    sendOtp: function (opts) {
+      var phone = (opts && opts.phone) || '';
+      return Promise.resolve({
+        data: { verificationId: 'local-' + phone, isExistingUser: db.profiles.length > 0 },
+        error: null
+      });
+    },
+    verifyOtp: function (opts) {
+      var phone = (opts && opts.phone) || '';
+      var token = (opts && opts.token) || '';
+      if (!/^\d{6}$/.test(token)) return Promise.resolve({ data: null, error: { message: '请输入 6 位数字验证码' } });
+      session = {
+        user: { id: 'local_' + phone, phone: phone, name: '会员' + phone.slice(-4) },
+        access_token: 'local',
+        created_at: iso(0)
+      };
+      writeSession(session);
+      return Promise.resolve({ data: session, error: null });
+    },
+    getSession: function () {
+      session = readSession();
+      return Promise.resolve({ data: session, error: null });
+    },
+    signOut: function () {
+      session = null;
+      writeSession(null);
+      return Promise.resolve({ error: null });
+    },
+    signInWithOAuth: function () {
+      return Promise.resolve({ data: null, error: { message: '本地演示模式暂不支持微信登录，请用手机号登录' } });
+    }
+  };
+
+  window.__createLocalDriver = function () {
+    session = readSession();
+    return {
+      auth: auth,
+      database: {
+        from: function (table) { return new Query(table); },
+        rpc: rpc
+      }
+    };
+  };
+})();
+
+</script>
+<script>
+// 数据驱动选择：同域优先用云服务，跨域（无法通过 Origin 校验）自动切到本地驱动
+(function () {
+  var cfg = window.APP_CONFIG || {};
+  var mode = cfg.mode || 'auto';
+  var epHost = '';
+  try { epHost = new URL(cfg.endpoint).hostname; } catch (e) { epHost = ''; }
+
+  var sdkReady = !!(window.WorkBuddyCloud && typeof window.WorkBuddyCloud.createWorkBuddyCloud === 'function');
+  var sameOrigin = !!epHost && location.hostname === epHost;
+
+  var useCloud;
+  if (mode === 'cloud') useCloud = true;
+  else if (mode === 'local') useCloud = false;
+  else useCloud = sdkReady && sameOrigin;
+
+  if (useCloud && sdkReady) {
+    window.cloud = window.WorkBuddyCloud.createWorkBuddyCloud({
+      endpoint: cfg.endpoint,
+      oauthRelayBaseUrl: cfg.oauthRelayBaseUrl,
+      publishableKey: cfg.publishableKey
+    });
+    window.DATA_MODE = 'cloud';
+    return;
+  }
+
+  if (typeof window.__createLocalDriver !== 'function') {
+    window.CLOUD_INIT_ERROR = '数据驱动加载失败，请刷新页面重试';
+    return;
+  }
+  window.cloud = window.__createLocalDriver();
+  window.DATA_MODE = 'local';
+  window.DATA_MODE_REASON = sdkReady
+    ? '当前域名不是云服务自有域名，接口会被跨域校验拒绝，已切到本地数据'
+    : '云服务 SDK 未加载，已切到本地数据';
+
+  // 本地模式角标：让访问者知道这是演示数据
+  function badge() {
+    var el = document.createElement('div');
+    el.style.cssText = 'position:fixed;left:10px;bottom:calc(78px + env(safe-area-inset-bottom));z-index:60;' +
+      'font-size:11px;line-height:1;padding:6px 9px;border-radius:999px;color:#5b5f73;' +
+      'background:rgba(255,255,255,.86);border:1px solid rgba(0,0,0,.06);' +
+      'box-shadow:0 4px 14px rgba(17,24,39,.08);backdrop-filter:blur(6px);pointer-events:none;letter-spacing:.2px';
+    el.textContent = '本地演示数据';
+    el.title = window.DATA_MODE_REASON;
+    document.body.appendChild(el);
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', badge);
+  else badge();
+})();
+
+</script>
+<script>
+(function () {
+  'use strict';
+
+  var app = document.getElementById('app');
+
+  var PLANS = [
+    { id: 'm', name: '月卡', desc: '30 天会员权益', price: 39, origin: 59, days: 30 },
+    { id: 'q', name: '季卡', desc: '90 天会员权益', price: 99, origin: 177, days: 90 },
+    { id: 'y', name: '年卡', desc: '365 天会员权益', price: 299, origin: 708, days: 365, hot: true }
+  ];
+
+  var state = {
+    session: null,
+    profile: null,
+    tab: 'recommend',
+    query: '',
+    searching: false,
+    planId: 'y',
+    token: 0,
+    lastOrder: null
+  };
+  var pendingOtp = null;
+
+  /* ================= 图标 ================= */
+  var ICONS = {
+    back: '<path d="M15 5l-7 7 7 7"/>',
+    search: '<circle cx="11" cy="11" r="7"/><path d="M20 20l-3.7-3.7"/>',
+    plus: '<path d="M12 5v14M5 12h14"/>',
+    heart: '<path d="M12 20.4C12 20.4 4.4 15.7 4.4 10.7A4.4 4.4 0 0 1 12 7.5a4.4 4.4 0 0 1 7.6 3.2c0 5-7.6 9.7-7.6 9.7z"/>',
+    comment: '<path d="M20.5 11.4a8 8 0 0 1-8.6 8 8.9 8.9 0 0 1-3.2-.6L4 20l1.6-4.7a7.8 7.8 0 0 1-1-4A8 8 0 0 1 12 3.4a8 8 0 0 1 8.5 8z"/>',
+    home: '<path d="M3 10.6 12 3l9 7.6V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
+    book: '<path d="M6 3h13v18H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M4 17h15"/>',
+    bell: '<path d="M18 8.5a6 6 0 1 0-12 0c0 6.5-2 7.5-2 7.5h16s-2-1-2-7.5"/><path d="M10.5 20a2 2 0 0 0 3 0"/>',
+    user: '<circle cx="12" cy="8" r="3.6"/><path d="M4.6 20c1.2-3.5 4-5.3 7.4-5.3S18.2 16.5 19.4 20"/>',
+    lock: '<rect x="4.5" y="10" width="15" height="10.5" rx="2.2"/><path d="M8.2 10V7.2a3.8 3.8 0 0 1 7.6 0V10"/>',
+    check: '<path d="M4.5 12.6l5 5L20 6.8"/>',
+    arrow: '<path d="M9 5l7 7-7 7"/>',
+    wallet: '<path d="M3 7.5A1.5 1.5 0 0 1 4.5 6H19a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M3 9.5h18"/><path d="M16.6 13.8h.01"/>',
+    edit: '<path d="M4 20h4L19 9a2.1 2.1 0 0 0-3-3L5 17z"/>',
+    help: '<circle cx="12" cy="12" r="8.6"/><path d="M9.6 9.6a2.5 2.5 0 1 1 3.4 2.3c-.6.3-.9.8-.9 1.4v.3"/><path d="M12 17.2h.01"/>',
+    logout: '<path d="M15 5h3a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-3"/><path d="M10 8l-4 4 4 4"/><path d="M6 12h9"/>',
+    file: '<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/>',
+    close: '<path d="M6 6l12 12M18 6L6 18"/>',
+    wechat: '<path d="M9.2 4.4c-3.3 0-6 2.2-6 4.9 0 1.5.8 2.9 2.1 3.8l-.5 1.8 2-1c.5.1 1 .2 1.5.2"/><path d="M20.8 13.6c0-2.4-2.3-4.3-5.2-4.3s-5.2 1.9-5.2 4.3 2.3 4.3 5.2 4.3c.6 0 1.1-.1 1.7-.2l1.9.9-.4-1.7c1.2-.8 2-2 2-3.3z"/>'
+  };
+  function ico(name) {
+    return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">' + (ICONS[name] || '') + '</svg>';
+  }
+
+  /* ================= 工具 ================= */
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  function avatarBg(name) {
+    var gs = [
+      'linear-gradient(135deg,#667eea,#764ba2)',
+      'linear-gradient(135deg,#38bdf8,#6366f1)',
+      'linear-gradient(135deg,#f472b6,#a855f7)',
+      'linear-gradient(135deg,#fb923c,#f43f5e)',
+      'linear-gradient(135deg,#34d399,#0ea5e9)'
+    ];
+    var s = name || 'S';
+    var n = 0;
+    for (var i = 0; i < s.length; i++) n += s.charCodeAt(i);
+    return gs[n % gs.length];
+  }
+  var toastTimer;
+  function toast(msg) {
+    var el = document.getElementById('toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { el.classList.remove('show'); }, 2200);
+  }
+  function fmtDate(ts) {
+    var d = new Date(ts);
+    return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2);
+  }
+  function ago(ts) {
+    var diff = (Date.now() - new Date(ts).getTime()) / 1000;
+    if (diff < 60) return '刚刚';
+    if (diff < 3600) return Math.floor(diff / 60) + ' 分钟前';
+    if (diff < 86400) return Math.floor(diff / 3600) + ' 小时前';
+    if (diff < 86400 * 30) return Math.floor(diff / 86400) + ' 天前';
+    return fmtDate(ts);
+  }
+  function genMemberId() {
+    var A = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+    var s = A[Math.floor(Math.random() * A.length)] + A[Math.floor(Math.random() * A.length)];
+    for (var i = 0; i < 6; i++) s += Math.floor(Math.random() * 10);
+    return s;
+  }
+  function uid() { return (state.session && state.session.user && state.session.user.id) || ''; }
+  function isMember() {
+    var p = state.profile;
+    return !!(p && p.expire_at && new Date(p.expire_at).getTime() > Date.now());
+  }
+  function daysLeft() {
+    var p = state.profile;
+    if (!p || !p.expire_at) return 0;
+    return Math.max(0, Math.ceil((new Date(p.expire_at).getTime() - Date.now()) / 86400000));
+  }
+  function errMsg(e) {
+    if (!e) return '操作失败，请稍后重试';
+    var m = e.message || e.error_description || e.hint || String(e);
+    if (/JWT|token|unauthenticated|not signed in/i.test(m)) return '登录状态已失效，请重新登录';
+    if (/network|fetch/i.test(m)) return '网络异常，请检查连接后重试';
+    return m;
+  }
+
+  /* ================= 数据层 ================= */
+  async function ensureProfile() {
+    var sel = await cloud.database.from('profiles').select('*').maybeSingle();
+    if (sel.error) throw sel.error;
+    if (sel.data) return sel.data;
+    var u = (state.session && state.session.user) || {};
+    var nickname = u.name || ('会员' + Math.floor(1000 + Math.random() * 9000));
+    var ins = await cloud.database.from('profiles').insert({ nickname: nickname, member_id: genMemberId() }).select();
+    if (ins.error) throw ins.error;
+    return (ins.data && ins.data[0]) || null;
+  }
+
+  async function apiFeed() {
+    var res = await cloud.database.from('feed_posts').select('*').order('created_at', { ascending: false }).limit(60);
+    if (res.error) throw res.error;
+    return res.data || [];
+  }
+  async function apiMyLikes() {
+    if (!uid()) return [];
+    var res = await cloud.database.from('likes').select('post_id').eq('owner_id', uid());
+    return (res.data || []).map(function (r) { return String(r.post_id); });
+  }
+  async function apiCommentCounts() {
+    var res = await cloud.database.from('comments').select('post_id');
+    var map = {};
+    (res.data || []).forEach(function (c) { map[String(c.post_id)] = (map[String(c.post_id)] || 0) + 1; });
+    return map;
+  }
+  async function apiPost(id) {
+    var res = await cloud.database.from('feed_posts').select('*').eq('id', id).maybeSingle();
+    if (res.error) throw res.error;
+    return res.data;
+  }
+  async function apiComments(postId) {
+    var res = await cloud.database.from('comments').select('*').eq('post_id', postId).order('created_at', { ascending: true });
+    if (res.error) throw res.error;
+    return res.data || [];
+  }
+  async function apiQuestions() {
+    var res = await cloud.database.from('questions').select('*').order('created_at', { ascending: false }).limit(50);
+    if (res.error) throw res.error;
+    return res.data || [];
+  }
+  async function apiMessages() {
+    var res = await cloud.database.from('messages').select('*').order('created_at', { ascending: false }).limit(50);
+    if (res.error) throw res.error;
+    return res.data || [];
+  }
+  async function apiOrders() {
+    var res = await cloud.database.from('orders').select('*').order('created_at', { ascending: false }).limit(20);
+    if (res.error) throw res.error;
+    return res.data || [];
+  }
+  async function apiCount(table) {
+    var res = await cloud.database.from(table).select('id', { count: 'exact', head: true }).eq('owner_id', uid());
+    return res.count || 0;
+  }
+
+  /* ================= 登录 / 会话 ================= */
+  async function handleOAuthReturn() {
+    var url = new URL(location.href);
+    if (!url.searchParams.has('code') && !url.searchParams.has('error')) return;
+    var provider = url.searchParams.get('provider');
+    if (provider !== 'wechat' && provider !== 'workbuddy') return;
+    var fn = provider === 'wechat' ? cloud.auth.handleWechatWebCallback : cloud.auth.handleWorkBuddyCallback;
+    if (typeof fn !== 'function') { toast('当前 SDK 不支持该登录方式'); return; }
+    var res = await fn.call(cloud.auth);
+    if (res.error) { toast(res.error.message); return; }
+    if (res.data) {
+      ['code', 'state', 'provider'].forEach(function (k) { url.searchParams.delete(k); });
+      history.replaceState(null, '', url.pathname + url.search + (url.hash || '#/feed'));
+    }
+  }
+
+  async function loadSession() {
+    try {
+      var res = await cloud.auth.getSession();
+      state.session = (res && res.data) || null;
+      state.profile = state.session ? await ensureProfile() : null;
+    } catch (e) {
+      state.session = null;
+      state.profile = null;
+    }
+  }
+
+  function startCountdown(btn) {
+    var left = 60;
+    btn.disabled = true;
+    btn.textContent = left + 's 后重发';
+    var timer = setInterval(function () {
+      left -= 1;
+      var b = document.getElementById('codeBtn');
+      if (!b) { clearInterval(timer); return; }
+      if (left <= 0) { clearInterval(timer); b.disabled = false; b.textContent = '重新获取'; }
+      else b.textContent = left + 's 后重发';
+    }, 1000);
+  }
+
+  /* ================= 视图 ================= */
+  function tabbar(active, unread) {
+    var items = [
+      { k: 'feed', label: '动态', icon: 'home', to: '#/feed' },
+      { k: 'questions', label: '问答', icon: 'book', to: '#/questions' },
+      { k: 'message', label: '消息', icon: 'bell', to: '#/message' },
+      { k: 'me', label: '我的', icon: 'user', to: '#/me' }
+    ];
+    return '<nav class="tabbar">' + items.map(function (it) {
+      return '<a href="' + it.to + '" class="' + (active === it.k ? 'on' : '') + '">' + ico(it.icon) +
+        '<span>' + it.label + '</span>' + (it.k === 'message' && unread ? '<i class="dot"></i>' : '') + '</a>';
+    }).join('') + '</nav>';
+  }
+
+  function topbar(title, opts) {
+    opts = opts || {};
+    var left = opts.back ? '<button class="icon-btn" data-act="back">' + ico('back') + '</button>' : '<span style="width:32px"></span>';
+    return '<header class="topbar">' + left + '<h2>' + esc(title) + '</h2>' + (opts.right || '<span style="width:32px"></span>') + '</header>';
+  }
+
+  function imgs(list) {
+    if (!list || !list.length) return '';
+    var cls = list.length === 1 ? 'c1' : list.length === 2 ? 'c2' : 'c3';
+    return '<div class="imgs ' + cls + '">' + list.map(function (im) {
+      return '<div class="ph ' + esc(im.cls || 'ph-1') + '" data-tag="' + esc(im.tag || '') + '"></div>';
+    }).join('') + '</div>';
+  }
+
+  function ViewLogin() {
+    return '<div class="login">' +
+      '<div class="login-hero"><div class="logo-mark">S</div><h1>Superben</h1><p>会员专属内容社区</p></div>' +
+      '<div class="login-card">' +
+        '<label class="field-label" for="phone">手机号</label>' +
+        '<div class="input-row"><span class="prefix">+86</span><input id="phone" inputmode="numeric" maxlength="11" placeholder="请输入手机号" autocomplete="tel"></div>' +
+        '<label class="field-label" for="code">验证码</label>' +
+        '<div class="input-row"><input id="code" inputmode="numeric" maxlength="6" placeholder="6 位验证码" autocomplete="one-time-code">' +
+          '<button class="btn-code" id="codeBtn" type="button" data-act="send-code">获取验证码</button></div>' +
+        '<button class="btn btn-primary" data-act="do-login" style="margin-top:6px">登 录 / 注 册</button>' +
+        '<div class="or-line"><span>或</span></div>' +
+        '<button class="btn btn-wechat" data-act="wechat-login">' + ico('wechat') + '微信一键登录</button>' +
+        '<p class="login-tip">' + (window.DATA_MODE === 'local'
+          ? '本地演示模式：验证码任填 6 位数字即可登录'
+          : '未注册的手机号验证后将自动创建账号') + '</p>' +
+      '</div>' +
+      '<p class="agreement">登录即代表你已阅读并同意 <a href="javascript:;">《会员协议》</a> 与 <a href="javascript:;">《隐私政策》</a></p>' +
+    '</div>';
+  }
+
+  function postCard(p, liked, ccount) {
+    var locked = p.content === null || p.content === undefined;
+    var text = locked ? (p.preview || '该内容为会员专属，开通后可查看全文') : p.content;
+    var body = locked
+      ? '<div class="locked"><div class="post-body">' + esc(text) + '</div>' +
+        '<div class="lock-mask">' + ico('lock') + '<span>该内容为会员专属</span>' +
+        '<button class="lock-btn" data-act="go" data-to="#/payment">开通会员查看</button></div></div>'
+      : '<div class="post-body clamp">' + esc(text) + '</div>' + imgs(p.images);
+    return '<article class="post" data-act="open-post" data-id="' + p.id + '">' +
+      '<div class="post-head">' +
+        '<div class="avatar" style="background:' + avatarBg(p.owner_name) + '">' + esc((p.owner_name || 'S').slice(0, 1)) + '</div>' +
+        '<div><div class="p-name">' + esc(p.owner_name || '匿名') +
+          (p.owner_id === 'system' ? '<span class="badge">博主</span>' : '') +
+          (p.is_vip ? '<span class="badge gold">V+</span>' : '') +
+        '</div><div class="p-time">' + ago(p.created_at) + '</div></div></div>' + body +
+      '<div class="post-foot">' +
+        '<button class="act ' + (liked ? 'on' : '') + '" data-act="like" data-id="' + p.id + '">' + ico('heart') + '<span>' + (p.likes || 0) + '</span></button>' +
+        '<span class="act">' + ico('comment') + '<span>' + (ccount || 0) + '</span></span>' +
+        (p.is_vip ? '<span class="vip-tag">仅 V+ 可见</span>' : '') +
+      '</div></article>';
+  }
+
+  async function ViewFeed() {
+    var posts = await apiFeed();
+    var likes = await apiMyLikes();
+    var counts = await apiCommentCounts();
+    var list = posts.slice();
+    if (state.tab === 'vip') list = list.filter(function (p) { return p.is_vip; });
+    if (state.query) {
+      var q = state.query.toLowerCase();
+      list = list.filter(function (p) {
+        return ((p.content || '') + (p.preview || '') + (p.owner_name || '')).toLowerCase().indexOf(q) > -1;
+      });
+    }
+    var banner = isMember() ? '' :
+      '<div class="card" data-act="go" data-to="#/payment" style="margin:14px;display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;box-shadow:0 8px 22px rgba(102,126,234,.28)">' +
+        '<div style="flex:1"><div style="font-size:14.5px;font-weight:600">开通会员，解锁全部 V+ 内容</div>' +
+        '<div style="font-size:12px;color:rgba(255,255,255,.82);margin-top:3px">专栏 · 模板 · 直播回放，一次开通全站畅看</div></div>' +
+        '<span style="font-size:12.5px;font-weight:600;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.35);padding:6px 14px;border-radius:999px;white-space:nowrap">立即开通</span></div>';
+
+    var searchBar = state.searching
+      ? '<div class="search-bar"><input id="searchInput" placeholder="搜索动态内容…" value="' + esc(state.query) + '"><button class="icon-btn" data-act="close-search">' + ico('close') + '</button></div>'
+      : '';
+
+    var rows = list.length
+      ? list.map(function (p) { return postCard(p, likes.indexOf(String(p.id)) > -1, counts[String(p.id)]); }).join('')
+      : '<div class="empty">' + ico('search') + '<p>还没有内容</p></div>';
+
+    return '<div class="page"><header class="topbar"><span class="brand">Superben</span>' +
+      '<div class="top-right"><button class="icon-btn" data-act="open-search">' + ico('search') + '</button></div></header>' +
+      searchBar +
+      '<div class="tabs">' +
+        '<button class="tab ' + (state.tab === 'recommend' ? 'on' : '') + '" data-act="tab" data-tab="recommend">推荐</button>' +
+        '<button class="tab ' + (state.tab === 'vip' ? 'on' : '') + '" data-act="tab" data-tab="vip">会员专区</button>' +
+      '</div>' + banner + rows +
+      '<button class="fab" data-act="go" data-to="#/publish">' + ico('plus') + '</button>' +
+      tabbar('feed') + '</div>';
+  }
+
+  async function ViewPost(id) {
+    var p = await apiPost(id);
+    if (!p) return notFound();
+    var cmts = await apiComments(id);
+    var liked = (await apiMyLikes()).indexOf(String(p.id)) > -1;
+    var locked = p.content === null || p.content === undefined;
+    var body = locked
+      ? '<div class="locked" style="margin-top:0"><div class="post-body">' + esc(p.preview || '该内容为会员专属') + '</div>' +
+        '<div class="lock-mask">' + ico('lock') + '<span>该内容为会员专属，开通后可查看全文</span>' +
+        '<button class="lock-btn" data-act="go" data-to="#/payment">开通会员</button></div></div>'
+      : '<div class="post-body">' + esc(p.content) + '</div>' + imgs(p.images);
+
+    var cmtHtml = cmts.length ? cmts.map(function (c) {
+      return '<div class="cmt"><div class="avatar" style="background:' + avatarBg(c.owner_name) + '">' + esc((c.owner_name || '匿').slice(0, 1)) + '</div>' +
+        '<div class="cmt-body"><div class="cmt-name">' + esc(c.owner_name || '匿名') + '</div>' +
+        '<div class="cmt-text">' + esc(c.content) + '</div><div class="cmt-time">' + ago(c.created_at) + '</div></div></div>';
+    }).join('') : '<div class="cmt-empty">还没有评论，来说两句</div>';
+
+    return '<div class="page no-tab" style="padding-bottom:76px">' + topbar('动态详情', { back: true }) +
+      '<div class="article"><div class="post-head" style="margin-bottom:14px">' +
+        '<div class="avatar" style="background:' + avatarBg(p.owner_name) + '">' + esc((p.owner_name || 'S').slice(0, 1)) + '</div>' +
+        '<div><div class="p-name">' + esc(p.owner_name || '匿名') + (p.owner_id === 'system' ? '<span class="badge">博主</span>' : '') + '</div>' +
+        '<div class="p-time">' + ago(p.created_at) + '</div></div></div>' + body +
+        '<div class="post-foot" style="border-top:none;padding-top:14px">' +
+          '<button class="act ' + (liked ? 'on' : '') + '" data-act="like" data-id="' + p.id + '">' + ico('heart') + '<span>' + (p.likes || 0) + '</span></button>' +
+          '<span class="act">' + ico('comment') + '<span>' + cmts.length + '</span></span>' +
+        '</div></div>' +
+      '<div class="comments"><div class="cmt-title">全部评论（' + cmts.length + '）</div>' + cmtHtml + '</div>' +
+      '<div class="input-bar"><input id="cmtInput" placeholder="写评论…" maxlength="200">' +
+      '<button class="send-btn" data-act="send-comment" data-id="' + p.id + '">发送</button></div></div>';
+  }
+
+  function ViewPublish() {
+    return '<div class="page no-tab">' + topbar('发布动态', { back: true }) +
+      '<div class="card" style="margin-top:14px">' +
+        '<textarea class="textarea" id="postInput" maxlength="500" placeholder="分享你的知识、见解…"></textarea>' +
+        '<div class="counter"><span id="postCount">0</span>/500</div></div>' +
+      '<div style="padding:4px 16px"><button class="btn btn-primary" data-act="publish-post">发 布</button></div>' +
+      '<p class="hint" style="padding:16px 18px">发布后立即上墙，可在「我的 · 我的动态」中管理。</p></div>';
+  }
+
+  async function ViewQuestions() {
+    var list = await apiQuestions();
+    var rows = list.length ? list.map(function (q) {
+      return '<div class="q-item">' +
+        '<div class="q-head"><span class="q-status ' + (q.status === 'done' ? 'done' : '') + '">' + (q.status === 'done' ? '已回答' : '待回答') + '</span>' +
+        '<span style="font-size:11.5px;color:#a8adbd">' + ago(q.created_at) + '</span></div>' +
+        '<div class="q-title">' + esc(q.title) + '</div>' +
+        (q.detail ? '<div class="q-desc">' + esc(q.detail) + '</div>' : '') +
+        '<div class="q-foot"><span>' + esc(q.owner_name || '匿名') + ' 提问</span><span class="right">' + (q.answers || 0) + ' 个回答</span></div></div>';
+    }).join('') : '<div class="empty">' + ico('help') + '<p>还没有人提问</p></div>';
+    return '<div class="page">' + topbar('问答') + '<div class="tabs"><button class="tab on">全部</button></div>' + rows +
+      '<button class="fab" data-act="go" data-to="#/ask">' + ico('edit') + '</button>' + tabbar('questions') + '</div>';
+  }
+
+  function ViewAsk() {
+    return '<div class="page no-tab">' + topbar('我要提问', { back: true }) +
+      '<div class="card" style="margin-top:14px">' +
+        '<label class="field-label">问题标题</label>' +
+        '<input class="field-input" id="qTitle" maxlength="60" placeholder="一句话说清你的问题">' +
+        '<div style="height:14px"></div>' +
+        '<label class="field-label">问题描述</label>' +
+        '<textarea class="textarea" id="qDesc" maxlength="500" placeholder="补充背景信息，方便针对性回答"></textarea></div>' +
+      '<div style="padding:4px 16px"><button class="btn btn-primary" data-act="submit-question">提交问题</button></div></div>';
+  }
+
+  async function ViewMessage() {
+    var list = await apiMessages();
+    var meta = {
+      system: { icon: 'shield', bg: 'linear-gradient(135deg,#667eea,#764ba2)' },
+      audit: { icon: 'check', bg: 'linear-gradient(135deg,#34d399,#0ea5e9)' },
+      fan: { icon: 'user', bg: 'linear-gradient(135deg,#fb923c,#f43f5e)' },
+      content: { icon: 'book', bg: 'linear-gradient(135deg,#8b5cf6,#6366f1)' }
+    };
+    meta.system.icon = 'help';
+    var unread = list.filter(function (m) { return !m.is_read; }).length;
+    var rows = list.length ? list.map(function (m) {
+      var mt = meta[m.kind] || meta.system;
+      return '<div class="msg ' + (m.is_read ? '' : 'unread') + '" data-act="read-msg" data-id="' + m.id + '">' +
+        '<div class="msg-ico" style="background:' + mt.bg + '">' + ico(mt.icon) + '</div>' +
+        '<div class="msg-body"><div class="msg-top"><span class="msg-title">' + esc(m.title) + '</span>' +
+        '<span class="msg-time">' + ago(m.created_at) + '</span></div>' +
+        '<div class="msg-desc">' + esc(m.body || '') + '</div></div></div>';
+    }).join('') : '<div class="empty">' + ico('bell') + '<p>暂无消息</p></div>';
+    return '<div class="page">' + topbar('消息') + '<div style="background:#fff">' + rows + '</div>' +
+      tabbar('message', unread) + '</div>';
+  }
+
+  async function ViewMe() {
+    var posts = await apiCount('posts');
+    var qs = await apiCount('questions');
+    var member = isMember();
+    var left = daysLeft();
+    var pct = member ? Math.min(100, Math.round((left / 365) * 100)) : 0;
+    var p = state.profile || {};
+    var name = p.nickname || (state.session.user && state.session.user.name) || '会员';
+
+    var card = member
+      ? '<div class="member-card"><div class="mc-top"><span class="mc-title">我的会员卡</span><span class="mc-state">生效中</span></div>' +
+        '<div class="mc-main">剩余 <em>' + left + '</em> 天</div>' +
+        '<div class="mc-bar"><i style="width:' + pct + '%"></i></div>' +
+        '<div class="mc-foot"><span>到期时间 ' + fmtDate(p.expire_at) + '</span>' +
+        '<button class="mc-btn" data-act="go" data-to="#/payment">续费</button></div></div>'
+      : '<div class="member-card"><div class="mc-top"><span class="mc-title">我的会员卡</span><span class="mc-state off">未开通</span></div>' +
+        '<div class="mc-main">暂未开通会员</div>' +
+        '<div class="mc-foot" style="margin-top:12px"><span>开通后可查看全部 V+ 内容</span>' +
+        '<button class="mc-btn" data-act="go" data-to="#/payment">立即开通</button></div></div>';
+
+    var menu = [
+      { icon: 'edit', label: '我的提问', act: 'go', to: '#/questions' },
+      { icon: 'wallet', label: '订单记录', act: 'go', to: '#/orders' },
+      { icon: 'help', label: '会员权益', act: 'go', to: '#/payment' },
+      { icon: 'bell', label: '消息推送设置', act: 'soon' }
+    ].map(function (m) {
+      return '<div class="menu-item" data-act="' + m.act + '"' + (m.to ? ' data-to="' + m.to + '"' : '') + '>' +
+        '<span class="mi-ico">' + ico(m.icon) + '</span><span>' + m.label + '</span><span class="arrow">›</span></div>';
+    }).join('');
+
+    return '<div class="page">' +
+      '<div class="me-hero"><div class="me-id">' +
+        '<div class="avatar lg" style="background:rgba(255,255,255,.22)">' + esc(name.slice(0, 1)) + '</div>' +
+        '<div><div class="me-name">' + esc(name) + '</div>' +
+        '<div class="me-sub">会员 ID：' + esc(p.member_id || '--') + '</div></div></div></div>' + card +
+      '<div class="stat-row">' +
+        '<div class="stat"><b>' + posts + '</b><span>动态</span></div>' +
+        '<div class="stat"><b>' + qs + '</b><span>提问</span></div>' +
+        '<div class="stat"><b>' + (member ? left : 0) + '</b><span>剩余天数</span></div></div>' +
+      '<div class="menu">' + menu + '</div>' +
+      '<div class="menu"><div class="menu-item danger" data-act="logout"><span class="mi-ico">' + ico('logout') + '</span><span>退出登录</span><span class="arrow">›</span></div></div>' +
+      '<p class="hint" style="text-align:center;padding:10px 0 26px">Superben 会员端</p>' + tabbar('me') + '</div>';
+  }
+
+  function ViewPayment() {
+    var cur = PLANS.filter(function (p) { return p.id === state.planId; })[0] || PLANS[2];
+    var rows = PLANS.map(function (p) {
+      return '<div class="plan ' + (p.id === state.planId ? 'on' : '') + '" data-act="select-plan" data-id="' + p.id + '">' +
+        (p.hot ? '<span class="plan-hot">最划算</span>' : '') + '<span class="plan-radio"></span>' +
+        '<div><div class="plan-name">' + p.name + '</div><div class="plan-desc">' + p.desc + '</div></div>' +
+        '<div class="plan-price"><b><i>¥</i>' + p.price + '</b><s>¥' + p.origin + '</s></div></div>';
+    }).join('');
+    var benefits = ['解锁全部 V+ 专栏与模板', '会员专属直播与回放', '提问优先回答', '资料下载权限'].map(function (b) {
+      return '<div class="benefit">' + ico('check') + '<span>' + b + '</span></div>';
+    }).join('');
+    return '<div class="page no-tab" style="padding-bottom:96px">' + topbar('开通会员', { back: true }) +
+      '<div class="plans">' + rows + '</div>' +
+      '<div class="benefits"><h3>会员权益</h3>' + benefits + '</div>' +
+      '<div class="pay-bar"><div class="pay-total">合计<b>¥' + cur.price + '</b></div>' +
+      '<button class="pay-btn" data-act="pay">' + ico('wallet') + '立即支付</button></div></div>';
+  }
+
+  function ViewResult() {
+    var p = state.profile || {};
+    var o = state.lastOrder || { plan: '年卡', price: 299 };
+    return '<div class="result"><div class="result-mark">' + ico('check') + '</div>' +
+      '<h1>开通成功</h1><p>会员权益已生效，全部 V+ 内容已解锁</p>' +
+      '<div class="result-detail">' +
+        '<div class="result-row"><span>开通套餐</span><b>' + esc(o.plan) + '</b></div>' +
+        '<div class="result-row"><span>支付金额</span><b>¥' + o.price + '</b></div>' +
+        '<div class="result-row"><span>会员 ID</span><b>' + esc(p.member_id || '--') + '</b></div>' +
+        '<div class="result-row"><span>到期时间</span><b>' + (p.expire_at ? fmtDate(p.expire_at) : '--') + '</b></div>' +
+      '</div>' +
+      '<button class="btn btn-primary" data-act="go" data-to="#/feed">进入社区</button>' +
+      '<button class="btn btn-ghost" data-act="go" data-to="#/me">查看会员卡</button></div>';
+  }
+
+  async function ViewOrders() {
+    var list = await apiOrders();
+    var rows = list.length ? list.map(function (o) {
+      return '<div class="menu-item" style="align-items:flex-start">' +
+        '<span class="mi-ico">' + ico('wallet') + '</span>' +
+        '<div style="flex:1"><div style="font-size:14px;font-weight:600">' + esc(o.plan) + ' · ¥' + o.amount + '</div>' +
+        '<div style="font-size:11.5px;color:#a8adbd">' + fmtDate(o.created_at) + ' · 订单号 ' + o.id + '</div></div>' +
+        '<span style="font-size:12px;color:' + (o.status === 'paid' ? '#3f8f4f' : '#c05a52') + '">' + (o.status === 'paid' ? '已支付' : '待支付') + '</span></div>';
+    }).join('') : '<div class="empty">' + ico('file') + '<p>还没有订单</p></div>';
+    return '<div class="page no-tab">' + topbar('订单记录', { back: true }) +
+      '<div class="menu" style="margin-top:12px">' + rows + '</div></div>';
+  }
+
+  function notFound() {
+    return '<div class="page no-tab">' + topbar('提示', { back: true }) +
+      '<div class="empty">' + ico('help') + '<p>页面不存在</p></div></div>';
+  }
+  function errorPage(e) {
+    return '<div class="page no-tab">' + topbar('出错了') +
+      '<div class="empty">' + ico('help') + '<p>' + esc(errMsg(e)) + '</p>' +
+      '<button class="btn btn-ghost" style="margin-top:16px;width:auto;display:inline-block;padding:0 20px" data-act="retry">重新加载</button></div></div>';
+  }
+  function skeleton() {
+    return '<div class="page"><div class="skeleton">加载中…</div></div>';
+  }
+
+  /* ================= 路由 ================= */
+  function parseHash() {
+    var raw = (location.hash || '#/feed').replace(/^#/, '');
+    var qi = raw.indexOf('?');
+    var path = qi > -1 ? raw.slice(0, qi) : raw;
+    return { seg: path.split('/').filter(Boolean) };
+  }
+
+  async function render() {
+    var t = ++state.token;
+    var seg = parseHash().seg;
+    var name = seg[0] || 'feed';
+
+    if (name !== 'login-member' && !state.session) { location.replace('#/login-member'); return; }
+    if (name === 'login-member' && state.session) { location.replace('#/feed'); return; }
+
+    app.innerHTML = skeleton();
+    var html;
+    try {
+      switch (name) {
+        case 'login-member': html = ViewLogin(); break;
+        case 'feed': html = await ViewFeed(); break;
+        case 'post': html = await ViewPost(seg[1]); break;
+        case 'publish': html = ViewPublish(); break;
+        case 'questions': html = await ViewQuestions(); break;
+        case 'ask': html = ViewAsk(); break;
+        case 'message': html = await ViewMessage(); break;
+        case 'me': html = await ViewMe(); break;
+        case 'payment': html = ViewPayment(); break;
+        case 'payment-result': html = ViewResult(); break;
+        case 'orders': html = await ViewOrders(); break;
+        default: html = notFound();
+      }
+    } catch (e) {
+      html = errorPage(e);
+    }
+    if (t !== state.token) return;
+    app.innerHTML = html;
+    window.scrollTo(0, 0);
+    afterRender(name);
+  }
+
+  function afterRender(name) {
+    if (name === 'publish') {
+      var t = document.getElementById('postInput');
+      var c = document.getElementById('postCount');
+      if (t && c) t.addEventListener('input', function () { c.textContent = t.value.length; });
+    }
+    if (state.searching) {
+      var s = document.getElementById('searchInput');
+      if (s) {
+        s.focus();
+        s.addEventListener('input', function () {
+          state.query = s.value.trim();
+          var v = s.value;
+          render().then(function () {
+            var again = document.getElementById('searchInput');
+            if (again) { again.focus(); again.value = v; }
+          });
+        });
+      }
+    }
+  }
+
+  function go(to) {
+    if (!to) return;
+    if (location.hash === to) render();
+    else location.hash = to;
+  }
+
+  /* ================= 动作 ================= */
+  var ACTIONS = {
+    go: function (el) { go(el.dataset.to); },
+    back: function () { if (history.length > 1) history.back(); else go('#/feed'); },
+    soon: function () { toast('该功能即将开放'); },
+    retry: function () { location.reload(); },
+
+    tab: function (el) { state.tab = el.dataset.tab; render(); },
+    'open-search': function () { state.searching = true; render(); },
+    'close-search': function () { state.searching = false; state.query = ''; render(); },
+    'open-post': function (el) { go('#/post/' + el.dataset.id); },
+
+    'send-code': async function () {
+      var phoneEl = document.getElementById('phone');
+      var phone = phoneEl ? phoneEl.value.trim() : '';
+      if (!/^1\d{10}$/.test(phone)) return toast('请输入正确的 11 位手机号');
+      var btn = document.getElementById('codeBtn');
+      if (!btn || btn.disabled) return;
+      btn.disabled = true;
+      btn.textContent = '发送中…';
+      var sent = await cloud.auth.sendOtp({ phone: phone });
+      if (sent.error) { btn.disabled = false; btn.textContent = '获取验证码'; return toast(errMsg(sent.error)); }
+      pendingOtp = { phone: phone, verificationId: sent.data.verificationId, isExistingUser: sent.data.isExistingUser };
+      startCountdown(btn);
+      toast('验证码已发送');
+    },
+
+    'do-login': async function () {
+      var phoneEl = document.getElementById('phone');
+      var codeEl = document.getElementById('code');
+      var phone = phoneEl ? phoneEl.value.trim() : '';
+      var code = codeEl ? codeEl.value.trim() : '';
+      if (!/^1\d{10}$/.test(phone)) return toast('请输入正确的 11 位手机号');
+      if (code.length !== 6) return toast('请输入 6 位验证码');
+      if (!pendingOtp || pendingOtp.phone !== phone) return toast('请先获取验证码');
+
+      toast('登录中…');
+      var res = await cloud.auth.verifyOtp({
+        phone: phone,
+        verificationId: pendingOtp.verificationId,
+        isExistingUser: pendingOtp.isExistingUser,
+        token: code
+      });
+      if (res.error) return toast(errMsg(res.error));
+      pendingOtp = null;
+      await loadSession();
+      go('#/feed');
+    },
+
+    'wechat-login': async function () {
+      var back = new URL(location.href);
+      back.pathname = '/';
+      back.hash = '';
+      ['code', 'state', 'provider'].forEach(function (k) { back.searchParams.delete(k); });
+      var res = await cloud.auth.signInWithOAuth({ provider: 'wechat', redirectTo: back.toString() });
+      if (res.error) return toast(errMsg(res.error));
+      location.assign(res.data.url);
+    },
+
+    like: async function (el) {
+      var id = Number(el.dataset.id);
+      var res = await cloud.database.rpc('toggle_like', { p_post_id: id });
+      if (res.error) return toast(errMsg(res.error));
+      render();
+    },
+
+    'send-comment': async function (el) {
+      var input = document.getElementById('cmtInput');
+      if (!input || !input.value.trim()) return toast('说点什么再发送吧');
+      var res = await cloud.database.from('comments').insert({
+        post_id: Number(el.dataset.id),
+        content: input.value.trim(),
+        owner_name: (state.profile && state.profile.nickname) || '会员'
+      });
+      if (res.error) return toast(errMsg(res.error));
+      render();
+    },
+
+    'publish-post': async function () {
+      var t = document.getElementById('postInput');
+      if (!t || !t.value.trim()) return toast('内容不能为空');
+      var res = await cloud.database.from('posts').insert({
+        content: t.value.trim(),
+        owner_name: (state.profile && state.profile.nickname) || '会员'
+      });
+      if (res.error) return toast(errMsg(res.error));
+      toast('发布成功');
+      setTimeout(function () { go('#/feed'); }, 400);
+    },
+
+    'submit-question': async function () {
+      var t = document.getElementById('qTitle');
+      var d = document.getElementById('qDesc');
+      if (!t || !t.value.trim()) return toast('请填写问题标题');
+      var res = await cloud.database.from('questions').insert({
+        title: t.value.trim(),
+        detail: (d && d.value.trim()) || null,
+        owner_name: (state.profile && state.profile.nickname) || '会员'
+      });
+      if (res.error) return toast(errMsg(res.error));
+      toast('提交成功');
+      setTimeout(function () { go('#/questions'); }, 400);
+    },
+
+    'read-msg': async function (el) {
+      await cloud.database.from('messages').update({ is_read: true }).eq('id', Number(el.dataset.id));
+      render();
+    },
+
+    'select-plan': function (el) { state.planId = el.dataset.id; render(); },
+
+    pay: async function () {
+      var cur = PLANS.filter(function (p) { return p.id === state.planId; })[0];
+      if (!cur) return;
+      var btn = document.querySelector('.pay-btn');
+      if (btn) { btn.style.opacity = '.6'; btn.style.pointerEvents = 'none'; btn.textContent = '支付中…'; }
+      try {
+        var ins = await cloud.database.from('orders').insert({ plan: cur.name, days: cur.days, amount: cur.price }).select();
+        if (ins.error) throw ins.error;
+        var rpc = await cloud.database.rpc('pay_order', { p_order_id: ins.data[0].id });
+        if (rpc.error) throw rpc.error;
+        state.lastOrder = { plan: cur.name, price: cur.price };
+        state.profile = await ensureProfile();
+        go('#/payment-result');
+      } catch (e) {
+        toast(errMsg(e));
+        if (btn) { btn.style.opacity = '1'; btn.style.pointerEvents = 'auto'; btn.textContent = '立即支付'; }
+      }
+    },
+
+    logout: async function () {
+      if (!window.confirm('确定要退出登录吗？')) return;
+      await cloud.auth.signOut();
+      state.session = null;
+      state.profile = null;
+      go('#/login-member');
+    }
+  };
+
+  document.addEventListener('click', function (e) {
+    var el = e.target.closest('[data-act]');
+    if (!el) return;
+    var fn = ACTIONS[el.dataset.act];
+    if (!fn) { if (el.dataset.to) return go(el.dataset.to); return toast('该功能即将开放'); }
+    var r = fn.call(el, el, e);
+    if (r && r.catch) r.catch(function (err) { toast(errMsg(err)); });
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Enter') return;
+    var id = e.target && e.target.id;
+    if (id === 'code') { e.preventDefault(); ACTIONS['do-login'](); }
+    if (id === 'cmtInput') {
+      e.preventDefault();
+      var b = document.querySelector('[data-act="send-comment"]');
+      if (b) b.click();
+    }
+  });
+
+  /* ================= 启动 ================= */
+  async function boot() {
+    if (window.CLOUD_INIT_ERROR || !window.cloud) {
+      app.innerHTML = '<div class="boot-fail">' + esc(window.CLOUD_INIT_ERROR || '云服务未初始化') + '</div>';
+      return;
+    }
+    try { await handleOAuthReturn(); } catch (e) { /* 回调失败按未登录处理 */ }
+    await loadSession();
+    if (!location.hash) location.replace(state.session ? '#/feed' : '#/login-member');
+    else render();
+  }
+  boot();
+})();
+
+</script>
+</body>
+</html>
