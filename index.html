@@ -364,14 +364,27 @@ h1,h2,h3,p{margin:0}
 <div id="app" class="app" data-page-node-id="6nQRvJzykXMwgrmD2tgFZH"><div class="boot" data-page-node-id="psSaIAOopaHhDlkF88K6lK">正在加载…</div></div>
 <div id="toast" class="toast" data-page-node-id="Go1bdYgxryirYPeO7tf6GT"></div>
 
+<script id="sb-sdk" src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-// 云服务公开配置：只包含可公开的 endpoint / publishableKey / oauthRelayBaseUrl
-// 这些值由云服务开通时下发，可安全放在前端；真正的权限由服务端按域名 + RLS 校验。
+// 公开配置：这里的值会暴露在前端代码里，只能放「可公开」的内容。
+// 真正的权限由数据库的行级安全策略（RLS）执行，不靠这些值保密。
 window.APP_CONFIG = {
   mode: 'local',
+  // 'supabase' 用 Supabase 真后端；'local' 浏览器本地演示；'auto' 自动判断
+  mode: 'local',
+  loginMethod: 'email',       // 'email' 邮箱验证码（免费）| 'phone' 手机短信（需配短信服务商）
+
+  // ---- Supabase（Project Settings → API 里复制）----
+  supabaseUrl: '',
+  supabaseAnonKey: '',
+
+  // ---- WorkBuddy 云服务（历史配置，保留但不启用）----
   endpoint: 'https://member-community-09146.app.workbuddy.host',
   publishableKey: 'wbpk_mSW4G19lsIVDNNG8l3bD1d_Fe4yoxWa3rw5x2kkk0QhIznUS045rNqf',
-  oauthRelayBaseUrl: 'https://www.workbuddy.cn/v2/as/genie-baas/oauth'
+  oauthRelayBaseUrl: 'https://www.workbuddy.cn/v2/genie-baas/oauth',
+
+  // ---- 管理后台 ----
+  adminPath: '#/admin'
 };
 
 </script>
@@ -759,20 +772,137 @@ window.APP_CONFIG = {
 
 </script>
 <script>
-// 数据驱动选择：同域优先用云服务，跨域（无法通过 Origin 校验）自动切到本地驱动
+/**
+ * Supabase 驱动：把 supabase-js 包成 app.js 认识的 cloud 接口
+ * app.js 只调用 cloud.database.from/rpc 和 cloud.auth.*，所以业务代码一行都不用改。
+ *
+ * 需要的全局配置（config.js）：
+ *   mode: 'supabase' | 'auto' | 'local'
+ *   supabaseUrl / supabaseAnonKey
+ *   loginMethod: 'email' | 'phone'
+ */
+(function () {
+  'use strict';
+
+  function normSession(s) {
+    if (!s || !s.user) return null;
+    var u = s.user;
+    var meta = u.user_metadata || {};
+    return {
+      user: {
+        id: u.id,
+        email: u.email || '',
+        phone: u.phone || '',
+        name: meta.name || meta.nickname || (u.email ? u.email.split('@')[0] : (u.phone || '会员'))
+      },
+      access_token: s.access_token,
+      created_at: s.expires_at ? new Date(s.expires_at * 1000).toISOString() : new Date().toISOString()
+    };
+  }
+
+  window.__createSupabaseDriver = function (cfg) {
+    if (!window.supabase || typeof window.supabase.createClient !== 'function') {
+      throw new Error('supabase-js 未加载');
+    }
+    var sb = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey, {
+      auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false }
+    });
+
+    var auth = {
+      // 发验证码：邮箱走邮件、手机号走短信（短信需在 Supabase 里配服务商）
+      sendOtp: function (opts) {
+        var email = (opts && opts.email) || '';
+        var phone = (opts && opts.phone) || '';
+        var req = email
+          ? sb.auth.signInWithOtp({ email: email, options: { shouldCreateUser: true } })
+          : sb.auth.signInWithOtp({ phone: phone });
+        return Promise.resolve(req).then(function (r) {
+          if (r.error) return { data: null, error: r.error };
+          return { data: { verificationId: email ? 'email:' + email : 'sms:' + phone, isExistingUser: true }, error: null };
+        });
+      },
+
+      verifyOtp: function (opts) {
+        var email = (opts && opts.email) || '';
+        var phone = (opts && opts.phone) || '';
+        var token = (opts && opts.token) || '';
+        var req = email
+          ? sb.auth.verifyOtp({ email: email, token: token, type: 'email' })
+          : sb.auth.verifyOtp({ phone: phone, token: token, type: 'sms' });
+        return Promise.resolve(req).then(function (r) {
+          if (r.error) return { data: null, error: r.error };
+          return { data: normSession(r.data && r.data.session), error: null };
+        });
+      },
+
+      getSession: function () {
+        return Promise.resolve(sb.auth.getSession()).then(function (r) {
+          return { data: normSession(r.data && r.data.session), error: null };
+        });
+      },
+
+      signOut: function () {
+        return Promise.resolve(sb.auth.signOut()).then(function (r) {
+          return { error: r.error || null };
+        });
+      },
+
+      signInWithOAuth: function (opts) {
+        var p = (opts && opts.provider) || '';
+        if (p !== 'wechat') return Promise.resolve({ data: null, error: { message: '暂只支持微信登录' } });
+        return Promise.resolve(sb.auth.signInWithOAuth({
+          provider: 'wechat',
+          options: { redirectTo: opts.redirectTo }
+        })).then(function (r) {
+          if (r.error) return { data: null, error: r.error };
+          return { data: { url: r.data && r.data.url }, error: null };
+        });
+      }
+    };
+
+    return {
+      auth: auth,
+      database: {
+        from: function (table) { return sb.from(table); },
+        rpc: function (name, params) { return sb.rpc(name, params); }
+      }
+    };
+  };
+})();
+
+</script>
+<script>
+// 数据驱动选择：supabase > 云服务同域 > 本地
 (function () {
   var cfg = window.APP_CONFIG || {};
   var mode = cfg.mode || 'auto';
   var epHost = '';
-  try { epHost = new URL(cfg.endpoint).hostname; } catch (e) { epHost = ''; }
+  try { epHost = new URL(cfg.endpoint || '').hostname; } catch (e) { epHost = ''; }
 
   var sdkReady = !!(window.WorkBuddyCloud && typeof window.WorkBuddyCloud.createWorkBuddyCloud === 'function');
   var sameOrigin = !!epHost && location.hostname === epHost;
+  var sbReady = typeof window.__createSupabaseDriver === 'function' && !!cfg.supabaseUrl && !!cfg.supabaseAnonKey;
 
-  var useCloud;
-  if (mode === 'cloud') useCloud = true;
+  var useCloud, useSb = false;
+  if (mode === 'supabase') { useSb = true; useCloud = false; }
+  else if (mode === 'cloud') useCloud = true;
   else if (mode === 'local') useCloud = false;
   else useCloud = sdkReady && sameOrigin;
+
+  if (useSb) {
+    if (sbReady) {
+      try {
+        window.cloud = window.__createSupabaseDriver(cfg);
+        window.DATA_MODE = 'cloud';
+        window.DATA_BACKEND = 'supabase';
+        return;
+      } catch (e) {
+        window.CLOUD_INIT_ERROR = 'Supabase 初始化失败：' + (e && e.message);
+      }
+    } else {
+      window.CLOUD_INIT_ERROR = 'Supabase 配置缺失（supabaseUrl / supabaseAnonKey）或 SDK 未加载';
+    }
+  }
 
   if (useCloud && sdkReady) {
     window.cloud = window.WorkBuddyCloud.createWorkBuddyCloud({
@@ -781,6 +911,7 @@ window.APP_CONFIG = {
       publishableKey: cfg.publishableKey
     });
     window.DATA_MODE = 'cloud';
+    window.DATA_BACKEND = 'workbuddy';
     return;
   }
 
@@ -790,11 +921,10 @@ window.APP_CONFIG = {
   }
   window.cloud = window.__createLocalDriver();
   window.DATA_MODE = 'local';
-  window.DATA_MODE_REASON = sdkReady
-    ? '当前域名不是云服务自有域名，接口会被跨域校验拒绝，已切到本地数据'
-    : '云服务 SDK 未加载，已切到本地数据';
+  window.DATA_BACKEND = 'local';
+  window.DATA_MODE_REASON = window.CLOUD_INIT_ERROR
+    || (sdkReady ? '当前域名不是云服务自有域名，接口会被跨域校验拒绝，已切到本地数据' : '未配置云端，已切到本地数据');
 
-  // 本地模式角标：让访问者知道这是演示数据
   function badge() {
     var el = document.createElement('div');
     el.style.cssText = 'position:fixed;left:10px;bottom:calc(78px + env(safe-area-inset-bottom));z-index:60;' +
@@ -802,7 +932,7 @@ window.APP_CONFIG = {
       'background:rgba(255,255,255,.86);border:1px solid rgba(0,0,0,.06);' +
       'box-shadow:0 4px 14px rgba(17,24,39,.08);backdrop-filter:blur(6px);pointer-events:none;letter-spacing:.2px';
     el.textContent = '本地演示数据';
-    el.title = window.DATA_MODE_REASON;
+    el.title = window.DATA_MODE_REASON || '';
     document.body.appendChild(el);
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', badge);
@@ -834,6 +964,20 @@ window.APP_CONFIG = {
   };
   var pendingOtp = null;
 
+  var LOGIN = ((window.APP_CONFIG || {}).loginMethod) === 'phone' ? 'phone' : 'email';
+  function accountValue() {
+    var el = document.getElementById('account');
+    return el ? el.value.trim() : '';
+  }
+  function validAccount(v) {
+    return LOGIN === 'email'
+      ? /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)
+      : /^1\d{10}$/.test(v);
+  }
+  function accountPayload(v) {
+    return LOGIN === 'email' ? { email: v } : { phone: v };
+  }
+
   /* ================= 图标 ================= */
   var ICONS = {
     back: '<path d="M15 5l-7 7 7 7"/>',
@@ -854,6 +998,7 @@ window.APP_CONFIG = {
     logout: '<path d="M15 5h3a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-3"/><path d="M10 8l-4 4 4 4"/><path d="M6 12h9"/>',
     file: '<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/>',
     close: '<path d="M6 6l12 12M18 6L6 18"/>',
+    shield: '<path d="M12 3.2 19 6v6.2c0 4.6-3.1 7.3-7 8.6-3.9-1.3-7-4-7-8.6V6z"/><path d="M9.3 12.2l2 2 3.4-3.6"/>',
     wechat: '<path d="M9.2 4.4c-3.3 0-6 2.2-6 4.9 0 1.5.8 2.9 2.1 3.8l-.5 1.8 2-1c.5.1 1 .2 1.5.2"/><path d="M20.8 13.6c0-2.4-2.3-4.3-5.2-4.3s-5.2 1.9-5.2 4.3 2.3 4.3 5.2 4.3c.6 0 1.1-.1 1.7-.2l1.9.9-.4-1.7c1.2-.8 2-2 2-3.3z"/>'
   };
   function ico(name) {
@@ -1050,20 +1195,26 @@ window.APP_CONFIG = {
   }
 
   function ViewLogin() {
+    var isEmail = LOGIN === 'email';
+    var field = isEmail
+      ? '<label class="field-label" for="account">邮箱</label>' +
+        '<div class="input-row"><input id="account" type="email" placeholder="请输入邮箱，用于接收验证码" autocomplete="email"></div>'
+      : '<label class="field-label" for="account">手机号</label>' +
+        '<div class="input-row"><span class="prefix">+86</span><input id="account" inputmode="numeric" maxlength="11" placeholder="请输入手机号" autocomplete="tel"></div>';
+    var tip = window.DATA_MODE === 'local'
+      ? '本地演示模式：验证码任填 6 位数字即可登录'
+      : (isEmail ? '验证码会发到你的邮箱，新邮箱验证后自动创建账号' : '未注册的手机号验证后将自动创建账号');
     return '<div class="login">' +
       '<div class="login-hero"><div class="logo-mark">王</div><h1>老王会员社区</h1><p>会员专属内容社区</p></div>' +
       '<div class="login-card">' +
-        '<label class="field-label" for="phone">手机号</label>' +
-        '<div class="input-row"><span class="prefix">+86</span><input id="phone" inputmode="numeric" maxlength="11" placeholder="请输入手机号" autocomplete="tel"></div>' +
+        field +
         '<label class="field-label" for="code">验证码</label>' +
         '<div class="input-row"><input id="code" inputmode="numeric" maxlength="6" placeholder="6 位验证码" autocomplete="one-time-code">' +
           '<button class="btn-code" id="codeBtn" type="button" data-act="send-code">获取验证码</button></div>' +
         '<button class="btn btn-primary" data-act="do-login" style="margin-top:6px">登 录 / 注 册</button>' +
         '<div class="or-line"><span>或</span></div>' +
         '<button class="btn btn-wechat" data-act="wechat-login">' + ico('wechat') + '微信一键登录</button>' +
-        '<p class="login-tip">' + (window.DATA_MODE === 'local'
-          ? '本地演示模式：验证码任填 6 位数字即可登录'
-          : '未注册的手机号验证后将自动创建账号') + '</p>' +
+        '<p class="login-tip">' + tip + '</p>' +
       '</div>' +
       '<p class="agreement">登录即代表你已阅读并同意 <a href="javascript:;">《会员协议》</a> 与 <a href="javascript:;">《隐私政策》</a></p>' +
     '</div>';
@@ -1246,6 +1397,11 @@ window.APP_CONFIG = {
         '<span class="mi-ico">' + ico(m.icon) + '</span><span>' + m.label + '</span><span class="arrow">›</span></div>';
     }).join('');
 
+    if (isAdminUser()) {
+      menu += '<div class="menu-item" data-act="go" data-to="#/admin">' +
+        '<span class="mi-ico">' + ico('shield') + '</span><span>管理后台</span><span class="arrow">›</span></div>';
+    }
+
     return '<div class="page">' +
       '<div class="me-hero"><div class="me-id">' +
         '<div class="avatar lg" style="background:rgba(255,255,255,.22)">' + esc(name.slice(0, 1)) + '</div>' +
@@ -1306,6 +1462,103 @@ window.APP_CONFIG = {
       '<div class="menu" style="margin-top:12px">' + rows + '</div></div>';
   }
 
+  /* ================= 管理后台 ================= */
+  var adminState = { tab: 'overview' };
+
+  function isAdminUser() {
+    if (window.DATA_MODE === 'local') return true;
+    return !!(state.profile && state.profile.is_admin);
+  }
+
+  function admEmpty(t) {
+    return '<div class="empty" style="padding:40px 0"><p>' + t + '</p></div>';
+  }
+
+  function admStat(v, label) {
+    return '<div style="flex:1"><b style="font-size:19px">' + v + '</b>' +
+      '<div style="font-size:12px;color:#8a8fa3;margin-top:4px">' + label + '</div></div>';
+  }
+
+  async function ViewAdmin() {
+    if (!isAdminUser()) {
+      return '<div class="page no-tab">' + topbar('管理后台', { back: true }) +
+        '<div class="empty" style="padding:50px 24px"><p>没有管理权限</p>' +
+        '<p style="font-size:12px;color:#a8adbd;margin-top:10px;line-height:1.7">' +
+        '在 Supabase 的 SQL Editor 执行下面这句，把自己设为管理员：<br>' +
+        'update public.profiles set is_admin = true where owner_id = auth.uid();</p></div></div>';
+    }
+
+    var pr = (await cloud.database.from('posts').select('*').order('created_at', { ascending: false }).limit(50));
+    var mr = (await cloud.database.from('profiles').select('*').order('created_at', { ascending: false }).limit(50));
+    var or = (await cloud.database.from('orders').select('*').order('created_at', { ascending: false }).limit(50));
+    var posts = pr.data || [], members = mr.data || [], orders = or.data || [];
+    var paid = orders.filter(function (o) { return o.status === 'paid'; });
+    var revenue = paid.reduce(function (s, o) { return s + Number(o.amount || 0); }, 0);
+
+    var tabs = [['overview', '概览'], ['posts', '内容'], ['members', '会员'], ['orders', '订单'], ['new', '发布']];
+    var nav = tabs.map(function (t) {
+      return '<button class="tab ' + (adminState.tab === t[0] ? 'on' : '') + '" data-act="admin-tab" data-tab="' + t[0] + '">' + t[1] + '</button>';
+    }).join('');
+
+    var body = '';
+    if (adminState.tab === 'overview') {
+      body = '<div class="card" style="margin:12px;padding:18px 8px"><div style="display:flex;text-align:center">' +
+        admStat(posts.length, '动态') + admStat(members.length, '用户') +
+        admStat(paid.length, '已付订单') + admStat('¥' + revenue, '收入') + '</div></div>' +
+        '<div class="card" style="margin:12px;padding:16px;font-size:12.5px;color:#5b6072;line-height:1.9">' +
+        '数据源：' + (window.DATA_MODE === 'local' ? '浏览器本地（演示，仅供本机查看）' : 'Supabase 数据库') + '<br>' +
+        '会员判定：profiles.expire_at 大于当前时间<br>' +
+        'V+ 正文：非会员在数据库层就被裁掉，前端拿不到' +
+        '</div>';
+    } else if (adminState.tab === 'posts') {
+      body = posts.length ? posts.map(function (p) {
+        return '<div class="card" style="margin:12px;padding:14px">' +
+          '<div style="display:flex;justify-content:space-between;font-size:12px;color:#8a8fa3">' +
+          '<span>' + esc(p.owner_name || '匿名') + (p.is_vip ? ' · <b style="color:#8B5E3C">V+</b>' : '') + '</span>' +
+          '<span>' + fmtDate(p.created_at) + '</span></div>' +
+          '<div style="margin:8px 0;font-size:13.5px;line-height:1.6;color:#2b2f3a">' +
+          esc((p.content || '').replace(/\n+/g, ' ').slice(0, 60)) + '…</div>' +
+          '<div style="display:flex;gap:8px">' +
+          '<button class="tab" data-act="admin-vip" data-id="' + p.id + '" data-vip="' + (p.is_vip ? '1' : '0') + '">' + (p.is_vip ? '取消 V+' : '设为 V+') + '</button>' +
+          '<button class="tab" style="color:#c05a52" data-act="admin-del-post" data-id="' + p.id + '">删除</button>' +
+          '</div></div>';
+      }).join('') : admEmpty('还没有动态');
+    } else if (adminState.tab === 'members') {
+      body = members.length ? members.map(function (m) {
+        var live = m.expire_at && new Date(m.expire_at).getTime() > Date.now();
+        return '<div class="card" style="margin:12px;padding:14px">' +
+          '<div style="display:flex;justify-content:space-between;align-items:center">' +
+          '<div><div style="font-size:14px;font-weight:600">' + esc(m.nickname || '会员') + '</div>' +
+          '<div style="font-size:12px;color:#8a8fa3;margin-top:3px">ID ' + esc(m.member_id || '--') + '</div></div>' +
+          '<span class="mc-state' + (live ? '' : ' off') + '">' + (live ? '生效中' : '未开通') + '</span></div>' +
+          '<div style="font-size:12px;color:#5b6072;margin-top:10px">到期：' + (m.expire_at ? fmtDate(m.expire_at) : '--') + '</div>' +
+          '<div style="display:flex;gap:8px;margin-top:10px">' +
+          '<button class="tab" data-act="admin-grant" data-id="' + m.owner_id + '" data-days="30">+30 天</button>' +
+          '<button class="tab" data-act="admin-grant" data-id="' + m.owner_id + '" data-days="365">+365 天</button>' +
+          '</div></div>';
+      }).join('') : admEmpty('还没有用户档案');
+    } else if (adminState.tab === 'orders') {
+      body = orders.length ? orders.map(function (o) {
+        return '<div class="card" style="margin:12px;padding:14px;display:flex;justify-content:space-between;align-items:center">' +
+          '<div><div style="font-size:14px;font-weight:600">' + esc(o.plan) + ' · ¥' + o.amount + '</div>' +
+          '<div style="font-size:12px;color:#8a8fa3;margin-top:4px">' + fmtDate(o.created_at) + ' · ' + o.days + ' 天</div></div>' +
+          '<span class="mc-state' + (o.status === 'paid' ? '' : ' off') + '">' + (o.status === 'paid' ? '已支付' : '待支付') + '</span></div>';
+      }).join('') : admEmpty('还没有订单');
+    } else {
+      body = '<div class="card" style="margin:12px;padding:16px">' +
+        '<label class="field-label">正文</label>' +
+        '<textarea class="textarea" id="apContent" placeholder="写点什么…" style="min-height:120px"></textarea>' +
+        '<label class="field-label" style="margin-top:14px">摘要（V+ 内容非会员看到这句）</label>' +
+        '<input class="field-input" id="apPreview" placeholder="选填">' +
+        '<label style="display:flex;align-items:center;gap:8px;margin-top:16px;font-size:13.5px">' +
+        '<input type="checkbox" id="apVip"> 设为 V+ 会员专属</label>' +
+        '<button class="btn btn-primary" data-act="admin-publish" style="margin-top:16px">发布</button></div>';
+    }
+
+    return '<div class="page no-tab" style="padding-bottom:30px">' + topbar('管理后台', { back: true }) +
+      '<div class="tabs" style="padding:10px 14px">' + nav + '</div>' + body + '</div>';
+  }
+
   function notFound() {
     return '<div class="page no-tab">' + topbar('提示', { back: true }) +
       '<div class="empty">' + ico('help') + '<p>页面不存在</p></div></div>';
@@ -1350,6 +1603,7 @@ window.APP_CONFIG = {
         case 'payment': html = ViewPayment(); break;
         case 'payment-result': html = ViewResult(); break;
         case 'orders': html = await ViewOrders(); break;
+        case 'admin': html = await ViewAdmin(); break;
         default: html = notFound();
       }
     } catch (e) {
@@ -1397,41 +1651,87 @@ window.APP_CONFIG = {
     retry: function () { location.reload(); },
 
     tab: function (el) { state.tab = el.dataset.tab; render(); },
+
+    'admin-tab': function (el) { adminState.tab = el.dataset.tab; render(); },
+
+    'admin-del-post': async function (el) {
+      if (!window.confirm('确定删除这条动态？删除后不可恢复')) return;
+      var r = await cloud.database.from('posts').delete().eq('id', Number(el.dataset.id));
+      if (r.error) return toast(errMsg(r.error));
+      toast('已删除'); render();
+    },
+
+    'admin-vip': async function (el) {
+      var next = el.dataset.vip !== '1';
+      var r = await cloud.database.from('posts').update({ is_vip: next }).eq('id', Number(el.dataset.id));
+      if (r.error) return toast(errMsg(r.error));
+      toast(next ? '已设为 V+' : '已取消 V+'); render();
+    },
+
+    'admin-grant': async function (el) {
+      var days = Number(el.dataset.days || 30);
+      var exp = new Date(Date.now() + days * 864e5).toISOString();
+      var r = await cloud.database.from('profiles').update({ expire_at: exp }).eq('owner_id', el.dataset.id);
+      if (r.error) return toast(errMsg(r.error));
+      toast('已延长 ' + days + ' 天'); render();
+    },
+
+    'admin-publish': async function () {
+      var c = document.getElementById('apContent');
+      var pv = document.getElementById('apPreview');
+      var vip = document.getElementById('apVip');
+      var content = c ? c.value.trim() : '';
+      if (content.length < 5) return toast('正文至少 5 个字');
+      var prof = state.profile || {};
+      var row = {
+        content: content,
+        preview: pv && pv.value.trim() ? pv.value.trim() : content.replace(/\n+/g, ' ').slice(0, 40) + '…',
+        is_vip: !!(vip && vip.checked),
+        owner_id: uid(),
+        owner_name: prof.nickname || (state.session && state.session.user && state.session.user.name) || '老王'
+      };
+      var r = await cloud.database.from('posts').insert(row).select();
+      if (r.error) return toast(errMsg(r.error));
+      toast('已发布');
+      adminState.tab = 'posts';
+      render();
+    },
     'open-search': function () { state.searching = true; render(); },
     'close-search': function () { state.searching = false; state.query = ''; render(); },
     'open-post': function (el) { go('#/post/' + el.dataset.id); },
 
     'send-code': async function () {
-      var phoneEl = document.getElementById('phone');
-      var phone = phoneEl ? phoneEl.value.trim() : '';
-      if (!/^1\d{10}$/.test(phone)) return toast('请输入正确的 11 位手机号');
+      var acc = accountValue();
+      if (!validAccount(acc)) {
+        return toast(LOGIN === 'email' ? '请输入正确的邮箱地址' : '请输入正确的 11 位手机号');
+      }
       var btn = document.getElementById('codeBtn');
       if (!btn || btn.disabled) return;
       btn.disabled = true;
       btn.textContent = '发送中…';
-      var sent = await cloud.auth.sendOtp({ phone: phone });
+      var sent = await cloud.auth.sendOtp(accountPayload(acc));
       if (sent.error) { btn.disabled = false; btn.textContent = '获取验证码'; return toast(errMsg(sent.error)); }
-      pendingOtp = { phone: phone, verificationId: sent.data.verificationId, isExistingUser: sent.data.isExistingUser };
+      pendingOtp = { account: acc, verificationId: sent.data.verificationId, isExistingUser: sent.data.isExistingUser };
       startCountdown(btn);
       toast('验证码已发送');
     },
 
     'do-login': async function () {
-      var phoneEl = document.getElementById('phone');
+      var acc = accountValue();
       var codeEl = document.getElementById('code');
-      var phone = phoneEl ? phoneEl.value.trim() : '';
       var code = codeEl ? codeEl.value.trim() : '';
-      if (!/^1\d{10}$/.test(phone)) return toast('请输入正确的 11 位手机号');
+      if (!validAccount(acc)) {
+        return toast(LOGIN === 'email' ? '请输入正确的邮箱地址' : '请输入正确的 11 位手机号');
+      }
       if (code.length !== 6) return toast('请输入 6 位验证码');
-      if (!pendingOtp || pendingOtp.phone !== phone) return toast('请先获取验证码');
+      if (!pendingOtp || pendingOtp.account !== acc) return toast('请先获取验证码');
 
       toast('登录中…');
-      var res = await cloud.auth.verifyOtp({
-        phone: phone,
-        verificationId: pendingOtp.verificationId,
-        isExistingUser: pendingOtp.isExistingUser,
-        token: code
-      });
+      var payload = accountPayload(acc);
+      payload.verificationId = pendingOtp.verificationId;
+      payload.isExistingUser = pendingOtp.isExistingUser;
+      payload.token = code;
+      var res = await cloud.auth.verifyOtp(payload);
       if (res.error) return toast(errMsg(res.error));
       pendingOtp = null;
       await loadSession();
